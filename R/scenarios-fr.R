@@ -107,42 +107,16 @@
 #' # Equispaced grids and Simpson's rule
 #'
 #' s <- seq(0, 1, l = 101)
-#' samp1 <- list()
+#' samp <- list()
+#' par(mfrow = c(3, 5))
 #' for (i in 1:3) {
-#'   samp1[[i]] <- r_frm_fr(n = 100, scenario = i, s = s, t = s,
-#'                          int_rule = "Simpson")
-#'   plot(samp1[[i]]$X_fdata)
-#'   plot(samp1[[i]]$error_fdata)
-#'   plot(samp1[[i]]$Y_fdata)
-#'   plot(samp1[[i]]$nl_dev)
-#'   image(x = s, y = s, z = samp1[[i]]$beta, col = viridisLite::viridis(20))
-#' }
-#'
-#' # Linear intensity tau = 2, equispaced grids, and Simpson's rule
-#'
-#' tau <- 2
-#' Y_fdata1 <- tau * samp1[[1]]$linear_fdata + samp1[[1]]$nl_dev +
-#'   samp1[[1]]$error_fdata
-#' plot(Y_fdata1)
-#' Y_fdata2 <- tau * samp1[[2]]$linear_fdata + samp1[[2]]$nl_dev +
-#'   samp1[[2]]$error_fdata
-#' plot(Y_fdata2)
-#' Y_fdata3 <- tau * samp1[[3]]$linear_fdata + samp1[[3]]$nl_dev +
-#'   samp1[[3]]$error_fdata
-#' plot(Y_fdata3)
-#'
-#' # Non equispaced grids and trapezoidal rule
-#'
-#' s <- c(seq(0, 0.5, l = 51), seq(0.51, 1, l = 101))
-#' t <- seq(2, 4, l = 151)
-#' samp2 <- list()
-#' for (i in 1:3) {
-#'   samp2[[i]] <- r_frm_fr(n = 100, scenario = i, s = s, t = t)
-#'   plot(samp2[[i]]$X_fdata)
-#'   plot(samp2[[i]]$error_fdata)
-#'   plot(samp2[[i]]$Y_fdata)
-#'   plot(samp2[[i]]$nl_dev)
-#'   image(x = s, y = t, z = samp2[[i]]$beta, col = viridisLite::viridis(20))
+#'   samp[[i]] <- r_frm_fr(n = 100, scenario = i, s = s, t = s,
+#'                         int_rule = "Simpson")
+#'   plot(samp[[i]]$X_fdata)
+#'   plot(samp[[i]]$error_fdata)
+#'   plot(samp[[i]]$Y_fdata)
+#'   plot(samp[[i]]$nl_dev)
+#'   image(x = s, y = s, z = samp[[i]]$beta, col = viridisLite::viridis(20))
 #' }
 #'
 #' ## Linear term as a concurrent model
@@ -157,6 +131,7 @@
 #'                        t(matrix(rep(sin(t), 100), nrow = length(t))),
 #'                        argvals = t),
 #'                      concurrent = TRUE)
+#' par(mfrow = c(3, 2))
 #' plot(samp_c_1$X_fdata)
 #' plot(samp_c_1$error_fdata)
 #' plot(samp_c_1$Y_fdata)
@@ -171,13 +146,14 @@
 #' X_fdata <- r_ou(n = 100, t = s, alpha = 2, sigma = 4, x0 = 1:100)
 #' error_fdata <- r_ou(n = 100, t = t, alpha = 1, sigma = 1, x0 = 1:100)
 #' beta <- r_gof2019_flmfr(n = 100, s = s, t = t)$beta
-#' samp_Xeps_1 <- r_frm_fr(scenario = NULL, X_fdata = X_fdata,
-#'                         error_fdata = error_fdata, beta = beta,
-#'                         nonlinear = "exp", int_rule = "trapezoid")
-#' plot(samp_Xeps_1$X_fdata)
-#' plot(samp_Xeps_1$error_fdata)
-#' plot(samp_Xeps_1$Y_fdata)
-#' plot(samp_Xeps_1$nl_dev)
+#' samp_Xeps <- r_frm_fr(scenario = NULL, X_fdata = X_fdata,
+#'                       error_fdata = error_fdata, beta = beta,
+#'                       nonlinear = "exp", int_rule = "trapezoid")
+#' par(mfrow = c(3, 2))
+#' plot(samp_Xeps$X_fdata)
+#' plot(samp_Xeps$error_fdata)
+#' plot(samp_Xeps$Y_fdata)
+#' plot(samp_Xeps$nl_dev)
 #' image(x = s, y = t, z = beta, col = viridisLite::viridis(20))
 #' @author Javier Álvarez-Liébana.
 #' @references
@@ -356,7 +332,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
     if (!fda.usc::is.fdata(nonlinear)) {
 
       stop(paste("If nonlinear is not NULL neither \"exp\", \"quadratic\"",
-                 "or \"sin\", it must be a \"fdata\" class object"))
+                 "or \"sin\", it must be an \"fdata\" class object"))
 
     } else {
 
@@ -365,7 +341,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
                ncol(nonlinear[["data"]]) != length(t)) {
 
         stop(paste("If nonlinear is not NULL neither \"exp\", \"quadratic\"",
-                   "or \"sin\", it must be a \"fdata\" class object with",
+                   "or \"sin\", it must be an \"fdata\" class object with",
                    "the same dimensions as error_fdata"))
 
       } else {

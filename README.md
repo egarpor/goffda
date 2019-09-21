@@ -4,7 +4,7 @@
 
 [![License](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Travis build
-status](https://travis-ci.com/egarpor/goffda.svg?branch=master)](https://travis-ci.com/egarpor/goffda)
+status](https://travis-ci.org/egarpor/goffda.svg?branch=master)](https://travis-ci.org/egarpor/goffda)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/goffda)](https://cran.r-project.org/package=goffda)
 <!-- badges: end -->
@@ -38,8 +38,8 @@ of the package, `flm_test`. More examples are available in `?flm_test`.
 # Generate data under H0
 n <- 100
 set.seed(987654321)
-X_fdata <- r_ou(n = n, t = seq(0, 1, l = 201), sigma = 2)
-epsilon <- r_ou(n = n, t = seq(0, 1, l = 201), sigma = 0.5)
+X_fdata <- r_ou(n = n, t = seq(0, 1, l = 101), sigma = 2)
+epsilon <- r_ou(n = n, t = seq(0, 1, l = 101), sigma = 0.5)
 Y_fdata <- epsilon
 
 # Test the FLMFR
@@ -53,7 +53,7 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
     #>  predictor and functional response)
     #> 
     #> data:  Y_fdata ~ X_fdata
-    #> statistic = 0.0027883, p = 17, q = 17, p-value = 0.052
+    #> statistic = 0.0004656, p = 17, q = 20, p-value = 0.072
     
     # Simple hypothesis
     flm_test(X = X_fdata, Y = Y_fdata, beta0 = 0, verbose = FALSE)
@@ -65,13 +65,13 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
     #>  predictor and functional response; simple hypothesis)
     #> 
     #> data:  Y_fdata ~ X_fdata
-    #> statistic = 0.0064122, p = 17, q = 17, p-value = 0.464
+    #> statistic = 0.00077811, p = 17, q = 20, p-value = 0.73
     
     # Generate data under H1
     n <- 100
     set.seed(987654321)
-    sample_frm_fr <- r_frm_fr(scenario = 3, n = n, s = seq(0, 1, l = 201),
-                              t = seq(0, 1, l = 201), nonlinear = "quadratic")
+    sample_frm_fr <- r_frm_fr(n = n, scenario = 3, s = seq(0, 1, l = 101),
+                              t = seq(0, 1, l = 101), nonlinear = "quadratic")
     X_fdata <- sample_frm_fr[["X_fdata"]]
     Y_fdata <- sample_frm_fr[["Y_fdata"]]
     

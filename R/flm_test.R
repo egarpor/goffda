@@ -115,8 +115,8 @@
 #' # Generate data under H0
 #' n <- 100
 #' set.seed(987654321)
-#' X_fdata <- r_ou(n = n, t = seq(0, 1, l = 201), sigma = 2)
-#' epsilon <- r_ou(n = n, t = seq(0, 1, l = 201), sigma = 0.5)
+#' X_fdata <- r_ou(n = n, t = seq(0, 1, l = 101), sigma = 2)
+#' epsilon <- r_ou(n = n, t = seq(0, 1, l = 101), sigma = 0.5)
 #' Y_fdata <- epsilon
 #'
 #' # Test the FLMFR
@@ -128,8 +128,8 @@
 #' # Generate data under H1
 #' n <- 100
 #' set.seed(987654321)
-#' sample_frm_fr <- r_frm_fr(n = n, scenario = 3, s = seq(0, 1, l = 201),
-#'                           t = seq(0, 1, l = 201), nonlinear = "quadratic")
+#' sample_frm_fr <- r_frm_fr(n = n, scenario = 3, s = seq(0, 1, l = 101),
+#'                           t = seq(0, 1, l = 101), nonlinear = "quadratic")
 #' X_fdata <- sample_frm_fr[["X_fdata"]]
 #' Y_fdata <- sample_frm_fr[["Y_fdata"]]
 #'
