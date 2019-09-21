@@ -1,0 +1,40 @@
+Package: goffda
+Type: Package
+Title: Goodness-of-Fit Tests for Functional Data
+Version: 0.0.5
+Date: 2019-09-21
+Authors@R: c(
+     person(given = "Eduardo", family = "García-Portugués",
+            role = c("aut", "cre"), email = "edgarcia@est-econ.uc3m.es"),
+     person("Javier", "Álvarez-Liébana", role = "aut",
+            email = "alvarezljavier@uniovi.es"),
+     person("Gonzalo", "Álvarez-Pérez", role = "ctb",
+            email = "gonzaloalvarez@uniovi.es"),
+     person("Manuel", "Febrero-Bande", role = "ctb",
+            email = "manuel.febrero@usc.es")
+     )
+Description: Implementation of several goodness-of-fit tests for functional
+     data. Currently, mostly related with the functional linear model with
+     functional/scalar response and functional/scalar predictor. The package
+     allows for the replication of the data applications considered in
+     García-Portugués, Álvarez-Liébana, Álvarez-Pérez and González-Manteiga
+     (2019) <arXiv:1909.07686>.
+License: GPL-3
+LazyData: true
+Depends:
+    R (>= 3.5.0),
+    Rcpp
+Imports:
+    fda.usc,
+    glmnet,
+    ks
+Suggests:
+    microbenchmark,
+    knitr,
+    viridisLite,
+    rmarkdown
+LinkingTo: Rcpp, RcppArmadillo
+URL: https://github.com/egarpor/goffda
+BugReports: https://github.com/egarpor/goffda
+Encoding: UTF-8
+RoxygenNote: 6.1.1
