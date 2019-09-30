@@ -79,9 +79,10 @@ aemet_temp_pred <- mean_aemet(aemet_temp_pred)
 aemet_temp_resp <- mean_aemet(aemet_temp_resp)
 
 # Plot
-par(mfrow = c(1, 2))
+old_par <- par(mfrow = c(1, 2))
 plot(aemet_temp_pred)
 plot(aemet_temp_resp)
+par(old_par)
 
 # Average daily temperatures
 day_avg_pred <- func_mean(aemet_temp_pred)
@@ -90,9 +91,7 @@ day_avg_resp <- func_mean(aemet_temp_resp)
 # Average yearly temperatures
 avg_year_pred <- rowMeans(aemet_temp_pred$data)
 avg_year_resp <- rowMeans(aemet_temp_resp$data)
-
-\dontrun{
-
+\donttest{
 ## Test the linear model with functional response and predictor
 
 (comp_flmfr <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp,
@@ -108,7 +107,6 @@ filled.contour(x = aemet_temp_pred$argvals, y = aemet_temp_resp$argvals,
 
 ## Test the linear model with scalar response and functional predictor
 
-par(mfrow = c(1, 1))
 (comp_flmsr <- flm_test(X = aemet_temp_pred, Y = avg_year_resp,
                         est_method = "fpcr_l1s"))
 (simp_flmsr <- flm_test(X = aemet_temp_pred, Y = avg_year_resp,

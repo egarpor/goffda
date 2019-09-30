@@ -62,9 +62,10 @@
 #' data("ontario")
 #'
 #' # Plot
-#' par(mfrow = c(1, 2))
+#' old_par <- par(mfrow = c(1, 2))
 #' plot(ontario$temp)
 #' plot(ontario$elec)
+#' par(old_par)
 #'
 #' # Observe the 3-day windows for each observation
 #' plot(ontario$temp$argvals, ontario$temp$data[2, ], type = "o",
@@ -80,9 +81,7 @@
 #' # end of one day and the beginning of the next do not match
 #' head(abs(ontario$elec$data[-368, 25] - ontario$elec$data[-1, 1]))
 #' head(diff(ontario$df$date))
-#'
-#' \dontrun{
-#'
+#' \donttest{
 #' ## Test the linear model with functional response and predictor
 #'
 #' (comp_flmfr <- flm_test(X = ontario$temp, Y = ontario$elec,
@@ -176,9 +175,10 @@
 #' aemet_temp_resp <- mean_aemet(aemet_temp_resp)
 #'
 #' # Plot
-#' par(mfrow = c(1, 2))
+#' old_par <- par(mfrow = c(1, 2))
 #' plot(aemet_temp_pred)
 #' plot(aemet_temp_resp)
+#' par(old_par)
 #'
 #' # Average daily temperatures
 #' day_avg_pred <- func_mean(aemet_temp_pred)
@@ -187,9 +187,7 @@
 #' # Average yearly temperatures
 #' avg_year_pred <- rowMeans(aemet_temp_pred$data)
 #' avg_year_resp <- rowMeans(aemet_temp_resp$data)
-#'
-#' \dontrun{
-#'
+#' \donttest{
 #' ## Test the linear model with functional response and predictor
 #'
 #' (comp_flmfr <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp,
@@ -205,7 +203,6 @@
 #'
 #' ## Test the linear model with scalar response and functional predictor
 #'
-#' par(mfrow = c(1, 1))
 #' (comp_flmsr <- flm_test(X = aemet_temp_pred, Y = avg_year_resp,
 #'                         est_method = "fpcr_l1s"))
 #' (simp_flmsr <- flm_test(X = aemet_temp_pred, Y = avg_year_resp,

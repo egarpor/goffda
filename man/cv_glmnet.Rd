@@ -188,9 +188,7 @@ y <- x \%*\% beta + e
 
 # Fit lasso (model with intercept, the default)
 cv_glmnet(x = x, y = y, alpha = "lasso", cv_verbose = TRUE)$beta_hat
-
-\dontrun{
-
+\donttest{
 ## Multivariate linear model with multivariate response
 
 # Simulate data
@@ -311,15 +309,14 @@ solve(crossprod(x_std) + diag(rep(cv0$lambda * n, p))) \%*\% t(x_std) \%*\% y_st
 cv1 <- cv_glmnet(x = x, y = y, alpha = "lasso", cv_verbose = TRUE)
 cv1$beta_hat
 
-## Parallelization
-
-# Parallel
-doMC::registerDoMC(cores = 4)
-microbenchmark::microbenchmark(
-cv_glmnet(x = x, y = y, nlambda = 100, alpha = "lasso", cv_parallel = TRUE),
-cv_glmnet(x = x, y = y, nlambda = 100, alpha = "lasso", cv_parallel = FALSE),
-times = 10
-)
+# ## Parallelization
+#
+# # Parallel
+# doMC::registerDoMC(cores = 2)
+# microbenchmark::microbenchmark(
+# cv_glmnet(x = x, y = y, nlambda = 100, cv_parallel = TRUE),
+# cv_glmnet(x = x, y = y, nlambda = 100, cv_parallel = FALSE),
+# times = 10)
 }
 }
 \references{

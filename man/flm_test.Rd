@@ -180,9 +180,7 @@ Y_fdata <- sample_frm_fr[["Y_fdata"]]
 
 # Test the FLMFR
 flm_test(X = X_fdata, Y = Y_fdata)
-
-\dontrun{
-
+\donttest{
 ## Functional response and predictor
 
 # Generate data under H0

@@ -122,12 +122,13 @@ beta_surf3 <- fpc_to_beta(beta_coefs = beta_coefs[1:50, 1:50],
                           X_fpc = X_fpc, Y_fpc = Y_fpc)
 
 # Show reconstructions
-par(mfrow = c(2, 2))
+old_par <- par(mfrow = c(2, 2))
 col <- viridisLite::viridis(20)
 image(s, t, beta_surf, col = col, zlim = c(-2.5, 2.5), main = "Original")
 image(s, t, beta_surf1, col = col, zlim = c(-2.5, 2.5), main = "2 x 5")
 image(s, t, beta_surf2, col = col, zlim = c(-2.5, 2.5), main = "15 x 10")
 image(s, t, beta_surf3, col = col, zlim = c(-2.5, 2.5), main = "50 x 50")
+par(old_par)
 }
 \references{
 Jolliffe, I. T. (2002). Principal Component Analysis. Springer-Verlag,

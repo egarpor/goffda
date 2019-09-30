@@ -157,9 +157,7 @@
 #'
 #' # Fit lasso (model with intercept, the default)
 #' cv_glmnet(x = x, y = y, alpha = "lasso", cv_verbose = TRUE)$beta_hat
-#'
-#' \dontrun{
-#'
+#' \donttest{
 #' ## Multivariate linear model with multivariate response
 #'
 #' # Simulate data
@@ -280,15 +278,14 @@
 #' cv1 <- cv_glmnet(x = x, y = y, alpha = "lasso", cv_verbose = TRUE)
 #' cv1$beta_hat
 #'
-#' ## Parallelization
-#'
-#' # Parallel
-#' doMC::registerDoMC(cores = 4)
-#' microbenchmark::microbenchmark(
-#' cv_glmnet(x = x, y = y, nlambda = 100, alpha = "lasso", cv_parallel = TRUE),
-#' cv_glmnet(x = x, y = y, nlambda = 100, alpha = "lasso", cv_parallel = FALSE),
-#' times = 10
-#' )
+#' # ## Parallelization
+#' #
+#' # # Parallel
+#' # doMC::registerDoMC(cores = 2)
+#' # microbenchmark::microbenchmark(
+#' # cv_glmnet(x = x, y = y, nlambda = 100, cv_parallel = TRUE),
+#' # cv_glmnet(x = x, y = y, nlambda = 100, cv_parallel = FALSE),
+#' # times = 10)
 #' }
 #' @author Eduardo García-Portugués. Initial contributions by Gonzalo
 #' Álvarez-Pérez.
@@ -386,6 +383,14 @@ cv_glmnet <- function(x, y, alpha = c("lasso", "ridge")[1], lambda = NULL,
     if (length(cv$nzero) == 1) {
 
       cv$nzero <- rep(NA, cv_nlambda)
+
+    }
+
+    # Reset par() for the user
+    if (cv_verbose) {
+
+      old_par <- par(no.readonly = TRUE)
+      on.exit(par(old_par))
 
     }
 
