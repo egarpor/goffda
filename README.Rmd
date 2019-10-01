@@ -26,7 +26,19 @@ Software companion for the paper "*A goodness-of-fit test for the functional lin
 
 ## Installation
 
-```{r, install, eval = FALSE}
+Get the released version from CRAN:
+
+```{r, install-CRAN, eval = FALSE}
+# Install the package
+install.packages("goffda")
+
+# Load package
+library(goffda)
+```
+
+Alternatively, get the latest version from GitHub:
+
+```{r, install-GitHub, eval = FALSE}
 # Install the package
 library(devtools)
 install_github("egarpor/goffda")

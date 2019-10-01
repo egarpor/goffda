@@ -20,6 +20,18 @@ replicate the data application presented.
 
 ## Installation
 
+Get the released version from CRAN:
+
+``` r
+# Install the package
+install.packages("goffda")
+
+# Load package
+library(goffda)
+```
+
+Alternatively, get the latest version from GitHub:
+
 ``` r
 # Install the package
 library(devtools)
