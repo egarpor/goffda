@@ -135,9 +135,7 @@
 #'
 #' # Test the FLMFR
 #' flm_test(X = X_fdata, Y = Y_fdata)
-#'
-#' \dontrun{
-#'
+#' \donttest{
 #' ## Functional response and predictor
 #'
 #' # Generate data under H0
@@ -426,7 +424,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   # Display progress
   if (verbose) {
 
-    cat("Estimating beta... ")
+    message("Estimating beta... ", appendLF = FALSE)
 
   }
 
@@ -597,7 +595,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   # Display progress
   if (verbose) {
 
-    cat("Done.\nComputing statistic... ")
+    message("Done.\nComputing statistic... ", appendLF = FALSE)
 
   }
 
@@ -614,7 +612,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
 
   if (verbose) {
 
-    cat("Done.\nBootstrap calibration...\n ")
+    message("Done.\nBootstrap calibration...\n", appendLF = FALSE)
     pb <- txtProgressBar(style = 3)
 
   }
@@ -848,6 +846,10 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
       plot(Rn_processes[[1]], add = TRUE, lwd = 2, pch = NA)
 
     }
+
+    # Reset par() for the user
+    old_par <- par(no.readonly = TRUE)
+    on.exit(par(old_par))
 
     # Produce the pairs plot
     p_max <- min(length(p_hat), plot_max_p)

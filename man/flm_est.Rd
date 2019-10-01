@@ -193,9 +193,7 @@ Y_fdata <- 2 * X_fdata + epsilon
 
 # Lasso-selection FPCR (p and q are estimated)
 flm_est(X = X_fdata, Y = Y_fdata, est_method = "fpcr_l1s")
-
-\dontrun{
-
+\donttest{
 ## Functional response and functional predictor
 
 # Generate data
