@@ -127,8 +127,7 @@ eigen(Ad)$values
 
 # # Warning if X contains repeated observations
 # Adot(X = rbind(1:3, 1:3, 3:5))
-
-\dontrun{
+\donttest{
 # Comparison with .Fortran("adot", PACKAGE = "fda.usc")
 n <- as.integer(n)
 a <- as.double(rep(0, (n * (n - 1) / 2 + 1)))

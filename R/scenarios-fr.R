@@ -108,7 +108,7 @@
 #'
 #' s <- seq(0, 1, l = 101)
 #' samp <- list()
-#' par(mfrow = c(3, 5))
+#' old_par <- par(mfrow = c(3, 5))
 #' for (i in 1:3) {
 #'   samp[[i]] <- r_frm_fr(n = 100, scenario = i, s = s, t = s,
 #'                         int_rule = "Simpson")
@@ -118,6 +118,7 @@
 #'   plot(samp[[i]]$nl_dev)
 #'   image(x = s, y = s, z = samp[[i]]$beta, col = viridisLite::viridis(20))
 #' }
+#' par(old_par)
 #'
 #' ## Linear term as a concurrent model
 #'
@@ -131,12 +132,13 @@
 #'                        t(matrix(rep(sin(t), 100), nrow = length(t))),
 #'                        argvals = t),
 #'                      concurrent = TRUE)
-#' par(mfrow = c(3, 2))
+#' old_par <- par(mfrow = c(3, 2))
 #' plot(samp_c_1$X_fdata)
 #' plot(samp_c_1$error_fdata)
 #' plot(samp_c_1$Y_fdata)
 #' plot(samp_c_1$nl_dev)
 #' plot(samp_c_1$beta)
+#' par(old_par)
 #'
 #' ## Sample for given X_fdata, error_fdata, and beta
 #'
@@ -149,12 +151,13 @@
 #' samp_Xeps <- r_frm_fr(scenario = NULL, X_fdata = X_fdata,
 #'                       error_fdata = error_fdata, beta = beta,
 #'                       nonlinear = "exp", int_rule = "trapezoid")
-#' par(mfrow = c(3, 2))
+#' old_par <- par(mfrow = c(3, 2))
 #' plot(samp_Xeps$X_fdata)
 #' plot(samp_Xeps$error_fdata)
 #' plot(samp_Xeps$Y_fdata)
 #' plot(samp_Xeps$nl_dev)
 #' image(x = s, y = t, z = beta, col = viridisLite::viridis(20))
+#' par(old_par)
 #' @author Javier Álvarez-Liébana.
 #' @references
 #' García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and

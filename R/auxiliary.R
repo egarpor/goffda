@@ -64,9 +64,7 @@
 #' B <- inprod_fdata(X_fdata1 = mlearn, X_fdata2 = mlearn2,
 #' int_rule = "trapezoid", as_matrix = TRUE)
 #' B
-#'
-#' \dontrun{
-#'
+#' \donttest{
 #' ## Efficiency comparisons
 #'
 #' microbenchmark::microbenchmark(fda.usc::fdata.cen(mlearn), fdata_cen(mlearn),

@@ -62,9 +62,10 @@ See more details about the construction of the dataset in Benatia et al.
 data("ontario")
 
 # Plot
-par(mfrow = c(1, 2))
+old_par <- par(mfrow = c(1, 2))
 plot(ontario$temp)
 plot(ontario$elec)
+par(old_par)
 
 # Observe the 3-day windows for each observation
 plot(ontario$temp$argvals, ontario$temp$data[2, ], type = "o",
@@ -80,9 +81,7 @@ legend("top", legend = c("Curve 1", "Curve 2", "Curve 3"), col = c(3, 1, 2),
 # end of one day and the beginning of the next do not match
 head(abs(ontario$elec$data[-368, 25] - ontario$elec$data[-1, 1]))
 head(diff(ontario$df$date))
-
-\dontrun{
-
+\donttest{
 ## Test the linear model with functional response and predictor
 
 (comp_flmfr <- flm_test(X = ontario$temp, Y = ontario$elec,

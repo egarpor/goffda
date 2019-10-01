@@ -103,9 +103,7 @@ for (i in X_fpc3$l) {
                           t = X_fdata2$argvals)
 
 }
-
-\dontrun{
-
+\donttest{
 ## Efficiency comparisons
 
 # fpc() vs. fda.usc::fdata2pc()
