@@ -7,14 +7,12 @@
 \alias{w_integral1D}
 \title{Quadrature rules for the \pkg{goffda} package}
 \usage{
-integral1D(fx, t, int_rule = "trapezoid", equispaced = FALSE,
-  verbose = FALSE)
+integral1D(fx, t, int_rule = "trapezoid", equispaced = FALSE, verbose = FALSE)
 
 integral2D(fxy, s, t, int_rule = "trapezoid", equispaced_x = FALSE,
   equispaced_y = FALSE, verbose = FALSE)
 
-w_integral1D(t, int_rule = "trapezoid", equispaced = FALSE,
-  verbose = FALSE)
+w_integral1D(t, int_rule = "trapezoid", equispaced = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{fx}{a vector of length \code{length(t)} with the evaluation of
