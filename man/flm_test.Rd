@@ -4,12 +4,12 @@
 \alias{flm_test}
 \title{Goodness-of-fit test for functional linear models}
 \usage{
-flm_test(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
-  p = NULL, q = NULL, thre_p = 0.99, thre_q = 0.99,
-  lambda = NULL, boot_scores = TRUE, verbose = TRUE,
-  plot_dens = TRUE, plot_proc = TRUE, plot_max_procs = 100,
-  plot_max_p = 2, plot_max_q = 2, save_fit_flm = TRUE,
-  save_boot_stats = TRUE, int_rule = "trapezoid", ...)
+flm_test(X, Y, beta0 = NULL, B = 500, est_method = "fpcr", p = NULL,
+  q = NULL, thre_p = 0.99, thre_q = 0.99, lambda = NULL,
+  boot_scores = TRUE, verbose = TRUE, plot_dens = TRUE,
+  plot_proc = TRUE, plot_max_procs = 100, plot_max_p = 2,
+  plot_max_q = 2, save_fit_flm = TRUE, save_boot_stats = TRUE,
+  int_rule = "trapezoid", ...)
 }
 \arguments{
 \item{X, Y}{samples of functional/scalar predictors and functional/scalar
