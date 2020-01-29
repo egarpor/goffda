@@ -14,10 +14,11 @@ aemet.raw$df$ind[aemet.raw$df$name == "A CORUÑA AEROPUERTO"] <- "1387A"
 # Retain only the temperature
 aemet_temp <- list("temp" = aemet.raw$temp, "df" = aemet.raw$df)
 
-# Purge to use only the 73 stations in fda.usc::aemet
+# Purge to use only the 73 stations in fda.usc::aemet and records from 1974-2013
 data(aemet)
 aemet$df$ind[2] <- "1387A" # Fix duplicated ID for consistency
-ind_purge <- aemet_temp$df$ind %in% aemet$df$ind
+ind_purge <- aemet_temp$df$ind %in% aemet$df$ind &
+  (1974 <= aemet_temp$df$year & aemet_temp$df$year <= 2013)
 aemet_temp$df <- aemet_temp$df[ind_purge, ]
 aemet_temp$temp <- aemet_temp$temp[ind_purge]
 
@@ -37,4 +38,4 @@ aemet_temp$temp$names <- list(main = "Temperature", xlab = "Day",
                               ylab = "Temperature (ºC)")
 
 # Save dataset
-save(file = "aemet_temp", file = "aemet_temp.rda", compress = "bzip2")
+save(list = "aemet_temp", file = "aemet_temp.rda", compress = "bzip2")
