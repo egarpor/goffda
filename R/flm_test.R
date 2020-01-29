@@ -833,7 +833,9 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
       ylab <- substitute(R[n](u, hat(Psi)[i], hat(Phi)[j]),
                          list(i = ind_X_fpc, j = ind_Y_fpc))
       plot(Rn_processes[[1]], lwd = 2, pch = NA, ylim = ylim, main = main,
-           xlab = xlab, ylab = ylab)
+           xlab = "", ylab = "")
+      mtext(text = xlab, side = 1, line = 3, cex = 0.85)
+      mtext(text = ylab, side = 2, line = 2.5, cex = 0.85)
       rug(knots(Rn_processes[[1]]))
 
       # Add bootstrap processes
@@ -854,7 +856,8 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
     # Produce the pairs plot
     p_max <- min(length(p_hat), plot_max_p)
     q_max <- min(length(q_thre), plot_max_q)
-    par(mfrow = c(p_max, q_max))
+    par(mfrow = c(p_max, q_max),
+        mar = c(4, 4, 3, 2) + 0.1)
     for (i in p_hat[1:p_max]) {
       for (j in q_thre[1:q_max]) {
 

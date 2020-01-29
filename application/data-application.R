@@ -174,8 +174,10 @@ aemet_temp_pred <- mean_aemet(aemet_temp_pred)
 aemet_temp_resp <- mean_aemet(aemet_temp_resp)
 
 # Smooth the data
-aemet_temp_pred_smooth <- fda.usc::min.np(fdataobj = aemet_temp_pred)$fdata.est
-aemet_temp_resp_smooth <- fda.usc::min.np(fdataobj = aemet_temp_resp)$fdata.est
+aemet_temp_pred_smooth <-
+  fda.usc::optim.np(fdataobj = aemet_temp_pred)$fdata.est
+aemet_temp_resp_smooth <-
+  fda.usc::optim.np(fdataobj = aemet_temp_resp)$fdata.est
 
 # Plot raw data
 if (save_fig) pdf(file = "aemet_pred.pdf", width = 7, height = 7)
@@ -349,7 +351,7 @@ set.seed(123456789)
 # Raw data
 beta0 <- matrix(0, nrow = length(aemet_temp_pred$argvals),
                 ncol = length(aemet_temp_pred$argvals))
-sdiag(beta0, k = 0) <- 1
+mgcv::sdiag(beta0, k = 0) <- 1
 set.seed(123456789)
 (stat_0_aemet_1 <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp,
                             B = B, est_method = "fpcr_l1s", beta0 = beta0,
@@ -430,9 +432,10 @@ beta0 <- flmfr_aemet_1$fit_flm$Beta_hat
 n <- nrow(beta0)
 for (k in 0:(n - 1)) {
 
-  m <- mean(c(sdiag(beta0, k = k), sdiag(beta0, k = -(n - k))), na.rm = TRUE)
-  if (k < n - 1) sdiag(beta0, k = k) <- m
-  if (k > 0) sdiag(beta0, k = -(n - k)) <- m
+  m <- mean(c(mgcv::sdiag(beta0, k = k), mgcv::sdiag(beta0, k = -(n - k))),
+            na.rm = TRUE)
+  if (k < n - 1) mgcv::sdiag(beta0, k = k) <- m
+  if (k > 0) mgcv::sdiag(beta0, k = -(n - k)) <- m
 
 }
 set.seed(123456789)
@@ -453,9 +456,10 @@ beta0 <- flmfr_aemet_smooth_1$fit_flm$Beta_hat
 n <- nrow(beta0)
 for (k in 0:(n - 1)) {
 
-  m <- mean(c(sdiag(beta0, k = k), sdiag(beta0, k = -(n - k))), na.rm = TRUE)
-  if (k < n - 1) sdiag(beta0, k = k) <- m
-  if (k > 0) sdiag(beta0, k = -(n - k)) <- m
+  m <- mean(c(mgcv::sdiag(beta0, k = k), mgcv::sdiag(beta0, k = -(n - k))),
+            na.rm = TRUE)
+  if (k < n - 1) mgcv::sdiag(beta0, k = k) <- m
+  if (k > 0) mgcv::sdiag(beta0, k = -(n - k)) <- m
 
 }
 set.seed(123456789)
