@@ -1,4 +1,3 @@
-
 # Clean workspace
 rm(list = ls())
 
@@ -19,42 +18,42 @@ save_fig <- TRUE
 
 # Improve visualizaation of saved figures
 if (save_fig) {
-
+  
   pdf <- function(..., cex.spe = 1.5) {
-
+    
     grDevices::pdf(...)
     par(cex.axis = cex.spe, cex.main = cex.spe, cex.lab = cex.spe)
-
+    
   }
-
+  
 }
 
 # Test for no functional effects by Kokoszka et al. (2008)
 kokoszka_test <- function(X_fpc, Y_fpc, thre_p = 0.99, thre_q = 0.99) {
-
+  
   # Sample size
   n <- nrow(X_fpc[["scores"]])
   stopifnot(n == nrow(Y_fpc[["scores"]]))
-
+  
   # Cuttofs for p and q
   p <- min(which((cumsum(X_fpc$d^2) / sum(X_fpc$d^2)) > thre_p))
   q <- min(which((cumsum(Y_fpc$d^2) / sum(Y_fpc$d^2)) > thre_q))
-
+  
   # Statistic
   stat <- 0
   for (j in 1:p) {
     for (k in 1:q) {
-
+      
       stat <- stat + 1 / (X_fpc[["d"]][j] * Y_fpc[["d"]][k])^2 *
         mean(X_fpc[["scores"]][, j] * Y_fpc[["scores"]][, k])^2
-
+      
     }
   }
   stat <- n^3 * stat
-
+  
   # p-value
   p_value <- pchisq(stat, p * q, lower.tail = FALSE)
-
+  
   # Return htest object
   meth <- "Kokoszka et al. (2008) test for significance"
   result <- structure(list(statistic = c("statistic" = stat),
@@ -63,15 +62,103 @@ kokoszka_test <- function(X_fpc, Y_fpc, thre_p = 0.99, thre_q = 0.99) {
                            p = p, q = q, data.name = "Y ~ X"))
   class(result) <- "htest"
   return(result)
-
+  
 }
+
+# Test for no functional effects by Lee et al. (2020)
+FMDD_test <- function(X_fdata, Y_fdata, int_rule = "trapezoid", B = 1e3) {
+  
+  # Check if X_fdata and Y_fdata are functional data as fdata
+  stopifnot(fda.usc::is.fdata(X_fdata))
+  stopifnot(fda.usc::is.fdata(Y_fdata))
+  
+  # Sample size
+  n <- nrow(X_fdata[["data"]])
+  
+  # Check if sample sizes are matched
+  if (n != nrow(Y_fdata[["data"]])) {
+    stop("X_fdata and Y_fdata samples must have the same number of elements")
+  }
+  
+  # Grid points in which our functional samples are valued
+  s <- X_fdata[["argvals"]]
+  t <- Y_fdata[["argvals"]]
+  
+  # Check if grids are equispaced
+  eps <- sqrt(.Machine[["double.eps"]])
+  equispaced_x <- all(abs(diff(s, differences = 2)) < eps)
+  equispaced_y <- all(abs(diff(t, differences = 2)) < eps)
+  
+  # Building matrices A and B
+  a_ij <- b_ij <- A_mat <- B_mat <- matrix(0, n, n)
+  for (i in 1:n) {
+
+    a_ij[i, ] <- sqrt(apply(t(t(X_fdata[["data"]]) - X_fdata[["data"]][i, ])^2,
+                            1, FUN = "integral1D", s, int_rule, equispaced_x))
+    b_ij[i, ] <- apply(t(t(Y_fdata[["data"]]) - Y_fdata[["data"]][i, ])^2,
+                       1, FUN = "integral1D", t, int_rule, equispaced_y)/2
+  }
+  
+  a_i_dot <- (1 / (n - 2)) * rowSums(a_ij)
+  a_dot_j <- (1 / (n - 2)) * colSums(a_ij)
+  a_dot_dot <- (1 / ((n - 2) * (n - 1))) * sum(sum(a_ij))
+  
+  b_i_dot <- (1 / (n - 2)) * rowSums(b_ij)
+  b_dot_j <- (1 / (n - 2)) * colSums(b_ij)
+  b_dot_dot <- (1 / ((n - 2) * (n - 1))) * sum(sum(b_ij))
+  
+  # A and B matrices: null elements in the diagonal
+  A_mat <- a_ij - matrix(rep(a_i_dot, n), nrow = n) -
+    t(matrix(rep(a_dot_j, n), nrow = n)) + a_dot_dot
+  B_mat <- b_ij - matrix(rep(b_i_dot, n), nrow = n) -
+    t(matrix(rep(b_dot_j, n), nrow = n)) + b_dot_dot
+  diag(B_mat) <- diag(A_mat) <- 0
+  
+  # FMDD_n statistic (sample version)
+  FMDD_n <- (1 / (n * (n - 3))) * sum(sum(A_mat * B_mat))
+  FMDD_orig_stat <- n * FMDD_n
+  
+  # Bootstrapped statistics
+  phi <- (1 + sqrt(5))/2
+  prob <- (phi + 2)/5
+  FMDD_star <- FMDD_boot_stats <- numeric(B)
+  for (b in 1:B) {
+    
+    V <- sample(x = c(1 - phi, phi), prob = c(prob, 1 - prob), size = n,
+                replace = TRUE)
+    
+    FMDD_star[b] <- (1 / (n * (n - 3))) * sum(sum(outer(V, V, "*") *
+                                                    A_mat * B_mat))
+    FMDD_boot_stats[b] <- n * FMDD_star[b]
+    
+  }
+  
+  # p-value
+  p_value <- mean(FMDD_orig_stat <= FMDD_boot_stats)
+  
+  # Output
+  result <-
+    structure(list(statistic = c(statistic = FMDD_orig_stat), p.value = p_value,
+                   boot_statistics = FMDD_boot_stats,
+                   method =
+                     paste0("FMDDD (Functional martingale difference ",
+                            "divergence)-based FLMFR significance test"),
+                   A_mat = A_mat, a_ij = a_ij, a_i_dot = a_i_dot,
+                   a_dot_j = a_dot_j, a_dot_dot = a_dot_dot,
+                   B_mat = B_mat, b_ij = b_ij, b_i_dot = b_i_dot,
+                   b_dot_j = b_dot_j, b_dot_dot = b_dot_dot))
+  class(result) <- "htest"
+  return(result)
+  
+}
+
 
 # Add custom month axis
 months_axis <- function(side = 1, ...) {
-
+  
   axis(side = side, at = pmin(0.5 + c(0, cumsum(days_in_month(1:12))), 364.5),
        labels = c(month.abb, "Jan"), las = 2, ...)
-
+  
 }
 
 ### Ontario dataset
@@ -125,7 +212,7 @@ filled.contour(x = ontario$temp$argvals, y = ontario$elec$argvals,
                }, xlab = "Temperature", ylab = "Electricity consumption")
 if (save_fig) dev.off()
 
-## Test for significance
+## Tests for significance
 
 set.seed(123456789)
 (noeff_ontario_1 <- flm_test(X = ontario$temp, Y = ontario$elec, B = B,
@@ -139,9 +226,18 @@ set.seed(123456789)
 (noeff_ontario_3 <- flm_test(X = ontario$temp, Y = ontario$elec, B = B,
                              est_method = "fpcr_l2", beta0 = 0,
                              save_fit_flm = FALSE, save_boot_stats = FALSE))
+
+# Kokoszka et al.
 set.seed(123456789)
 (kok_ontario <- kokoszka_test(X_fpc = flmfr_ontario_1$fit_flm$X_fpc,
                               Y_fpc = flmfr_ontario_1$fit_flm$Y_fpc))
+
+# Lee et al.: statistic = 230564, p-value < 2.2e-16
+set.seed(123456789)
+(lee_ontario <-
+    FMDD_test(X_fdata = ontario$temp, Y_fdata = ontario$elec, B = B))
+
+
 
 # Emphatic rejections
 
@@ -316,9 +412,18 @@ set.seed(123456789)
 (noeff_aemet_3 <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp,
                            B = B, est_method = "fpcr_l2", beta0 = 0,
                            save_fit_flm = FALSE, save_boot_stats = FALSE))
+
+# Kokoszka et al.
 set.seed(123456789)
 (kok_aemet <- kokoszka_test(X_fpc = flmfr_aemet_1$fit_flm$X_fpc,
                             Y_fpc = flmfr_aemet_1$fit_flm$Y_fpc))
+
+# Lee et al.: statistic = 9112344, p-value < 2.2e-16
+set.seed(123456789)
+(lee_aemet <-
+    FMDD_test(X_fdata = aemet_temp_pred, Y_fdata = aemet_temp_resp, B = B))
+
+
 
 # Smooth data
 set.seed(123456789)
@@ -339,9 +444,19 @@ set.seed(123456789)
                                   B = B, est_method = "fpcr_l2",
                                   beta0 = 0, save_fit_flm = FALSE,
                                   save_boot_stats = FALSE))
+
+# Kokozska et al.
 set.seed(123456789)
 (kok_aemet_smooth <- kokoszka_test(X_fpc = flmfr_aemet_smooth_1$fit_flm$X_fpc,
                                    Y_fpc = flmfr_aemet_smooth_1$fit_flm$Y_fpc))
+
+# Lee et al.
+set.seed(123456789)
+(lee_aemet_smooth <- FMDD_test(X_fdata = aemet_temp_pred_smooth,
+                               Y_fdata = aemet_temp_resp_smooth, B = B))
+
+
+
 # Emphatic rejections in all of them
 
 ## Stationarity: beta0 = diag(1)
@@ -372,10 +487,10 @@ set.seed(123456789)
                                    save_boot_stats = FALSE))
 set.seed(123456789)
 (stat_0_aemet_smooth_2 <- flm_test(X = aemet_temp_pred_smooth,
-                                 Y = aemet_temp_resp_smooth,
-                                 B = B, est_method = "fpcr",
-                                 beta0 = beta0, save_fit_flm = FALSE,
-                                 save_boot_stats = FALSE))
+                                   Y = aemet_temp_resp_smooth,
+                                   B = B, est_method = "fpcr",
+                                   beta0 = beta0, save_fit_flm = FALSE,
+                                   save_boot_stats = FALSE))
 set.seed(123456789)
 (stat_0_aemet_smooth_3 <- flm_test(X = aemet_temp_pred_smooth,
                                    Y = aemet_temp_resp_smooth,
@@ -429,11 +544,11 @@ set.seed(123456789)
 beta0 <- flmfr_aemet_1$fit_flm$Beta_hat
 n <- nrow(beta0)
 for (k in 0:(n - 1)) {
-
+  
   m <- mean(c(sdiag(beta0, k = k), sdiag(beta0, k = -(n - k))), na.rm = TRUE)
   if (k < n - 1) sdiag(beta0, k = k) <- m
   if (k > 0) sdiag(beta0, k = -(n - k)) <- m
-
+  
 }
 set.seed(123456789)
 (stat_d_aemet_1 <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp,
@@ -452,11 +567,11 @@ set.seed(123456789)
 beta0 <- flmfr_aemet_smooth_1$fit_flm$Beta_hat
 n <- nrow(beta0)
 for (k in 0:(n - 1)) {
-
+  
   m <- mean(c(sdiag(beta0, k = k), sdiag(beta0, k = -(n - k))), na.rm = TRUE)
   if (k < n - 1) sdiag(beta0, k = k) <- m
   if (k > 0) sdiag(beta0, k = -(n - k)) <- m
-
+  
 }
 set.seed(123456789)
 beta0 <- mean(flmfr_aemet_smooth_1$fit_flm$Beta_hat)
