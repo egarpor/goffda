@@ -66,7 +66,7 @@ kokoszka_test <- function(X_fpc, Y_fpc, thre_p = 0.99, thre_q = 0.99) {
 }
 
 # Test for no functional effects by Lee et al. (2020)
-FMDD_test <- function(X_fdata, Y_fdata, int_rule = "trapezoid", B = 1e3) {
+fmdd_test <- function(X_fdata, Y_fdata, int_rule = "trapezoid", B = 1e3) {
   
   # Check if X_fdata and Y_fdata are functional data as fdata
   stopifnot(fda.usc::is.fdata(X_fdata))
@@ -97,25 +97,28 @@ FMDD_test <- function(X_fdata, Y_fdata, int_rule = "trapezoid", B = 1e3) {
                             1, FUN = "integral1D", s, int_rule, equispaced_x))
     b_ij[i, ] <- apply(t(t(Y_fdata[["data"]]) - Y_fdata[["data"]][i, ])^2,
                        1, FUN = "integral1D", t, int_rule, equispaced_y)/2
+    
   }
   
-  a_i_dot <- (1 / (n - 2)) * rowSums(a_ij)
-  a_dot_j <- (1 / (n - 2)) * colSums(a_ij)
-  a_dot_dot <- (1 / ((n - 2) * (n - 1))) * sum(sum(a_ij))
+  a_i_dot <- rowSums(a_ij) / (n - 2)
+  a_dot_j <- colSums(a_ij) / (n - 2)
+  a_dot_dot <- sum(a_dot_j) / (n - 1)
   
-  b_i_dot <- (1 / (n - 2)) * rowSums(b_ij)
-  b_dot_j <- (1 / (n - 2)) * colSums(b_ij)
-  b_dot_dot <- (1 / ((n - 2) * (n - 1))) * sum(sum(b_ij))
+  b_i_dot <- rowSums(b_ij) / (n - 2)
+  b_dot_j <- colSums(b_ij) / (n - 2)
+  b_dot_dot <- sum(b_dot_j) / (n - 1)
   
   # A and B matrices: null elements in the diagonal
-  A_mat <- a_ij - matrix(rep(a_i_dot, n), nrow = n) -
-    t(matrix(rep(a_dot_j, n), nrow = n)) + a_dot_dot
-  B_mat <- b_ij - matrix(rep(b_i_dot, n), nrow = n) -
-    t(matrix(rep(b_dot_j, n), nrow = n)) + b_dot_dot
+  A_mat <- t(t(a_ij - a_i_dot) - a_dot_j) + a_dot_dot
+    # a_ij - matrix(rep(a_i_dot, n), nrow = n) -
+    # t(matrix(rep(a_dot_j, n), nrow = n)) + a_dot_dot
+  B_mat <- t(t(b_ij - b_i_dot) - b_dot_j) + b_dot_dot
+    # b_ij - matrix(rep(b_i_dot, n), nrow = n) -
+    # t(matrix(rep(b_dot_j, n), nrow = n)) + b_dot_dot
   diag(B_mat) <- diag(A_mat) <- 0
   
   # FMDD_n statistic (sample version)
-  FMDD_n <- (1 / (n * (n - 3))) * sum(sum(A_mat * B_mat))
+  FMDD_n <- sum(A_mat * B_mat) / (n * (n - 3))
   FMDD_orig_stat <- n * FMDD_n
   
   # Bootstrapped statistics
@@ -127,8 +130,7 @@ FMDD_test <- function(X_fdata, Y_fdata, int_rule = "trapezoid", B = 1e3) {
     V <- sample(x = c(1 - phi, phi), prob = c(prob, 1 - prob), size = n,
                 replace = TRUE)
     
-    FMDD_star[b] <- (1 / (n * (n - 3))) * sum(sum(outer(V, V, "*") *
-                                                    A_mat * B_mat))
+    FMDD_star[b] <- sum(tcrossprod(V) * A_mat * B_mat) / (n * (n - 3))
     FMDD_boot_stats[b] <- n * FMDD_star[b]
     
   }
@@ -141,12 +143,9 @@ FMDD_test <- function(X_fdata, Y_fdata, int_rule = "trapezoid", B = 1e3) {
     structure(list(statistic = c(statistic = FMDD_orig_stat), p.value = p_value,
                    boot_statistics = FMDD_boot_stats,
                    method =
-                     paste0("FMDDD (Functional martingale difference ",
-                            "divergence)-based FLMFR significance test"),
-                   A_mat = A_mat, a_ij = a_ij, a_i_dot = a_i_dot,
-                   a_dot_j = a_dot_j, a_dot_dot = a_dot_dot,
-                   B_mat = B_mat, b_ij = b_ij, b_i_dot = b_i_dot,
-                   b_dot_j = b_dot_j, b_dot_dot = b_dot_dot))
+                     paste0("Functional martingale difference ",
+                            "FLMFR significance test"),
+                   A_mat = A_mat, B_mat = B_mat))
   class(result) <- "htest"
   return(result)
   
@@ -235,7 +234,7 @@ set.seed(123456789)
 # Lee et al.: statistic = 230564, p-value < 2.2e-16
 set.seed(123456789)
 (lee_ontario <-
-    FMDD_test(X_fdata = ontario$temp, Y_fdata = ontario$elec, B = B))
+    fmdd_test(X_fdata = ontario$temp, Y_fdata = ontario$elec, B = B))
 
 
 
@@ -269,9 +268,9 @@ mean_aemet <- function(x) {
 aemet_temp_pred <- mean_aemet(aemet_temp_pred)
 aemet_temp_resp <- mean_aemet(aemet_temp_resp)
 
-# Smooth the data
-aemet_temp_pred_smooth <- fda.usc::min.np(fdataobj = aemet_temp_pred)$fdata.est
-aemet_temp_resp_smooth <- fda.usc::min.np(fdataobj = aemet_temp_resp)$fdata.est
+# Smooth the data 
+aemet_temp_pred_smooth <- fda.usc::optim.np(fdataobj = aemet_temp_pred)$fdata.est
+aemet_temp_resp_smooth <- fda.usc::optim.np(fdataobj = aemet_temp_resp)$fdata.est
 
 # Plot raw data
 if (save_fig) pdf(file = "aemet_pred.pdf", width = 7, height = 7)
@@ -421,7 +420,7 @@ set.seed(123456789)
 # Lee et al.: statistic = 9112344, p-value < 2.2e-16
 set.seed(123456789)
 (lee_aemet <-
-    FMDD_test(X_fdata = aemet_temp_pred, Y_fdata = aemet_temp_resp, B = B))
+    fmdd_test(X_fdata = aemet_temp_pred, Y_fdata = aemet_temp_resp, B = B))
 
 
 
@@ -450,9 +449,9 @@ set.seed(123456789)
 (kok_aemet_smooth <- kokoszka_test(X_fpc = flmfr_aemet_smooth_1$fit_flm$X_fpc,
                                    Y_fpc = flmfr_aemet_smooth_1$fit_flm$Y_fpc))
 
-# Lee et al.
+# Lee et al.: statistic = 9130455, p-value < 2.2e-16
 set.seed(123456789)
-(lee_aemet_smooth <- FMDD_test(X_fdata = aemet_temp_pred_smooth,
+(lee_aemet_smooth <- fmdd_test(X_fdata = aemet_temp_pred_smooth,
                                Y_fdata = aemet_temp_resp_smooth, B = B))
 
 
