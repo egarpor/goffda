@@ -37,5 +37,5 @@ LinkingTo: Rcpp, RcppArmadillo
 URL: https://github.com/egarpor/goffda
 BugReports: https://github.com/egarpor/goffda
 Encoding: UTF-8
-RoxygenNote: 7.0.2
+RoxygenNote: 7.1.0
 Roxygen: list(old_usage = TRUE)
