@@ -686,13 +686,13 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
           Y_star <- fpc_to_fdata(coefs = Y_star_scores,
                                  X_fpc = fit_flm[["Y_fpc"]])
 
-          # Refit model searching for the optimal lambda and using p
+          # Refit model searching for the optimal lambda and using p_thre
+          # (instead of p_hat)
           fit_flm_star <- flm_est(X = X, Y = Y_star, est_method = est_method,
-                                  p = p, q = q, thre_p = thre_p,
-                                  thre_q = thre_q, lambda = lambda,
-                                  X_fpc = fit_flm[["X_fpc"]],
-                                  Y_fpc = NULL, centered = TRUE,
-                                  int_rule = int_rule, cv_verbose = FALSE, ...)
+                                  p = p_thre, q = q_thre, lambda = lambda,
+                                  X_fpc = fit_flm[["X_fpc"]], Y_fpc = NULL,
+                                  centered = TRUE, int_rule = int_rule,
+                                  cv_verbose = FALSE, ...)
 
           # Residuals FPC coefficients
           E_star_hat_scores[, , j] <- fit_flm_star[["residuals_scores"]]
@@ -738,14 +738,13 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
         # Refit lambda to capture the variability on its selection
         } else {
 
-          # Refit model searching for the optimal lambda and using p (instead
-          # of p_hat)
+          # Refit model searching for the optimal lambda and using p_thre
+          # (instead of p_hat)
           fit_flm_star <- flm_est(X = X, Y = Y_star, est_method = est_method,
-                                  p = p, q = q, thre_p = thre_p,
-                                  thre_q = thre_q, lambda = lambda,
-                                  X_fpc = fit_flm[["X_fpc"]],
-                                  Y_fpc = NULL, centered = TRUE,
-                                  int_rule = int_rule, cv_verbose = FALSE, ...)
+                                  p = p_thre, q = q_thre, lambda = lambda,
+                                  X_fpc = fit_flm[["X_fpc"]],Y_fpc = NULL,
+                                  centered = TRUE, int_rule = int_rule,
+                                  cv_verbose = FALSE, ...)
 
           # Residuals FPC coefficients
           E_star_hat_scores[, , j] <- fit_flm_star[["residuals_scores"]]
@@ -754,7 +753,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
           boot_lambda[i] <- ifelse(is.null(fit_flm_star[["lambda"]]),
                                    NA, fit_flm_star[["lambda"]])
           boot_p_hat[[i]] <- fit_flm_star[["p_hat"]]
-          
+
         }
 
       }
