@@ -89,12 +89,12 @@
 #' \item{parameter}{a vector with the dimensions \eqn{p} and \eqn{q}
 #' considered in the test statistic. These are the lengths of the outputs
 #' \code{p} and \code{q}.}
-#' \item{p}{the index of the FPC considered for \code{x}.}
-#' \item{q}{the index of the FPC considered for \code{y}.}
+#' \item{p}{the index of the FPC considered for \code{X}.}
+#' \item{q}{the index of the FPC considered for \code{Y}.}
 #' \item{fit_flm}{the output resulted from calling \code{\link{flm_est}}.}
 #' \item{boot_lambda}{bootstrapped \eqn{lambda}.}
 #' \item{boot_p}{a list with the bootstrapped indexes of the FPC considered
-#' for \code{x}.}
+#' for \code{X}.}
 #' \item{data.name}{name of the value of \code{data}.}
 #' @details
 #' The function implements the bootstrap-based goodness-of-fit test for
