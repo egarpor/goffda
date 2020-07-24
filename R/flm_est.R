@@ -97,7 +97,7 @@
 #' \item{residuals_scores}{the matrix of coefficients of
 #' \code{residuals}, with dimension \code{c(n, q_thre)}.}
 #' \item{X_fpc, Y_fpc}{FPC of \code{X} and \code{Y}, as
-#' returned by \code{\link{fpc}}.}
+#' returned by \code{\link{fpc}} with \code{n_fpc = n}.}
 #' \item{lambda}{regularization parameter \eqn{\lambda} used for the
 #' estimation methods \code{"fpcr_l2"}, \code{"fpcr_l1"}, and
 #' \code{"fpcr_l1s"}.}
