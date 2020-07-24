@@ -75,8 +75,11 @@
 #' considered in the graphical tool. They limit the resulting plot to be at
 #' most of size \code{c(plot_max_p, plot_max_q)}. Default to \code{2}.
 #' @param save_fit_flm,save_boot_stats flag to return \code{fit_flm} and
-#' \code{boot_statistics}. If \code{FALSE}, these memory-expensive objects
+#' \code{boot_*}. If \code{FALSE}, these memory-expensive objects
 #' are set to \code{NA}. Default to \code{TRUE}.
+#' @param refit_lambda flag to reselect \eqn{lambda} in each bootstrap
+#' replicate, incorporating its variability in the bootstrap calibration.
+#' Much more time consumig. Defaults to \code{FALSE}.
 #' @return An object of the \code{htest} class with the following elements:
 #' \item{statistic}{test statistic.}
 #' \item{p.value}{\eqn{p}-value of the test.}
@@ -86,9 +89,12 @@
 #' \item{parameter}{a vector with the dimensions \eqn{p} and \eqn{q}
 #' considered in the test statistic. These are the lengths of the outputs
 #' \code{p} and \code{q}.}
-#' \item{p}{the index of the FPC considered for \code{x}.}
-#' \item{q}{the index of the FPC considered for \code{y}.}
+#' \item{p}{the index of the FPC considered for \code{X}.}
+#' \item{q}{the index of the FPC considered for \code{Y}.}
 #' \item{fit_flm}{the output resulted from calling \code{\link{flm_est}}.}
+#' \item{boot_lambda}{bootstrapped \eqn{lambda}.}
+#' \item{boot_p}{a list with the bootstrapped indexes of the FPC considered
+#' for \code{X}.}
 #' \item{data.name}{name of the value of \code{data}.}
 #' @details
 #' The function implements the bootstrap-based goodness-of-fit test for
@@ -305,7 +311,8 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
                      lambda = NULL, boot_scores = TRUE, verbose = TRUE,
                      plot_dens = TRUE, plot_proc = TRUE, plot_max_procs = 100,
                      plot_max_p = 2, plot_max_q = 2, save_fit_flm = TRUE,
-                     save_boot_stats = TRUE, int_rule = "trapezoid", ...) {
+                     save_boot_stats = TRUE, int_rule = "trapezoid",
+                     refit_lambda = FALSE, ...) {
 
   ## Preprocessing
 
@@ -604,9 +611,11 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   # upper triangular of the inner product matrix that stacks the columns
   Adot_vec <- Adot(X = fit_flm[["X_fpc"]][["scores"]])
 
-  # Original statistic
+  # Original statistic. Constant computed only if refit_lambda = TRUE as in
+  # that case there are different normalizing constants depending on the
+  # selected p
   orig_stat <- flm_stat(E = E_hat_scores, p = p, Adot_vec = Adot_vec,
-                        constant = FALSE)
+                        constant = refit_lambda)
 
   ## Bootstrap
 
@@ -624,7 +633,10 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   # Objects employed in the bootstrap resampling
   phi <- (1 + sqrt(5)) / 2
   prob <- (phi + 2) / 5
-  boot_stats <- numeric(B)
+  boot_stats <- rep(NA, B)
+  boot_lambda <- rep(ifelse(is.null(fit_flm[["lambda"]]),
+                            NA, fit_flm[["lambda"]]), B)
+  boot_p_hat <- rep(list(p_hat), B)
 
   # Array with the estimated bootstrap errors, saved for the processes plot
   # done plot_max_procs bootstrap processes
@@ -656,12 +668,41 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
         Y_star_scores <- Y_hat_scores + E_star_scores
 
         # Recenter the bootstrap observations before refitting the model,
-        # imitating what it is done in the original fitting by flm_est()
+        # imitating what it is done in the original fitting by flm_est
         Y_star_scores <- t(t(Y_star_scores) - colMeans(Y_star_scores))
 
-        # Avoid refitting the model by computing the residuals of refitted
-        # model as projections of Y_star_scores
-        E_star_hat_scores[, , j] <- P_hat %*% Y_star_scores
+        # Keep lambda fixed in the bootstrap (much faster)
+        if (!refit_lambda) {
+
+          # Avoid refitting the model by computing the residuals of refitted
+          # model as projections of Y_star_scores
+          E_star_hat_scores[, , j] <- P_hat %*% Y_star_scores
+
+        # Refit lambda to capture the variability on its selection
+        } else {
+
+          # Reconstruct the functional response from bootstrapped scores,
+          # useful for recalling flm_est using an fdata response
+          Y_star <- fpc_to_fdata(coefs = Y_star_scores,
+                                 X_fpc = fit_flm[["Y_fpc"]])
+
+          # Refit model searching for the optimal lambda and using p_thre
+          # (instead of p_hat)
+          fit_flm_star <- flm_est(X = X, Y = Y_star, est_method = est_method,
+                                  p = p_thre, q = q_thre, lambda = lambda,
+                                  X_fpc = fit_flm[["X_fpc"]], Y_fpc = NULL,
+                                  centered = TRUE, int_rule = int_rule,
+                                  cv_verbose = FALSE, ...)
+
+          # Residuals FPC coefficients
+          E_star_hat_scores[, , j] <- fit_flm_star[["residuals_scores"]]
+
+          # Bootstrapped lambda and p_hat
+          boot_lambda[i] <- ifelse(is.null(fit_flm_star[["lambda"]]),
+                                   NA, fit_flm_star[["lambda"]])
+          boot_p_hat[[i]] <- fit_flm_star[["p_hat"]]
+
+        }
 
       # Bootstrap on the functional residuals
       } else {
@@ -677,25 +718,50 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
         # it will recenter also X, which is already centered)
         Y_star <- fdata_cen(X_fdata = Y_star)
 
-        # Refit the model using the same tuning parameters (lambda, p_thre and
-        # q_thre) and reusing the FPC of X. Observe that p_hat is *not* used
-        # because passing p = p_hat if the estimation method is "fpcr_l1" or
-        # "fpcr_l1s" will result in a different fit
-        E_star_hat_scores[, , j] <- flm_est(X = X, Y = Y_star,
-                                            est_method = est_method_star,
-                                            p = p_star, q = q_thre,
-                                            lambda = fit_flm[["lambda"]],
-                                            X_fpc = fit_flm[["X_fpc"]],
-                                            Y_fpc = NULL, centered = TRUE,
-                                            int_rule = int_rule,
-                                            cv_verbose = FALSE,
-                                            ...)[["residuals_scores"]]
+        # Keep lambda fixed in the bootstrap (much faster)
+        if (!refit_lambda) {
+
+          # Refit the model using the same tuning parameters (lambda, p_thre and
+          # q_thre) and reusing the FPC of X. Observe that p_hat is *not* used
+          # because passing p = p_hat if the estimation method is "fpcr_l1" or
+          # "fpcr_l1s" will result in a different fit
+          E_star_hat_scores[, , j] <- flm_est(X = X, Y = Y_star,
+                                              est_method = est_method_star,
+                                              p = p_star, q = q_thre,
+                                              lambda = fit_flm[["lambda"]],
+                                              X_fpc = fit_flm[["X_fpc"]],
+                                              Y_fpc = NULL, centered = TRUE,
+                                              int_rule = int_rule,
+                                              cv_verbose = FALSE,
+                                              ...)[["residuals_scores"]]
+
+        # Refit lambda to capture the variability on its selection
+        } else {
+
+          # Refit model searching for the optimal lambda and using p_thre
+          # (instead of p_hat)
+          fit_flm_star <- flm_est(X = X, Y = Y_star, est_method = est_method,
+                                  p = p_thre, q = q_thre, lambda = lambda,
+                                  X_fpc = fit_flm[["X_fpc"]],Y_fpc = NULL,
+                                  centered = TRUE, int_rule = int_rule,
+                                  cv_verbose = FALSE, ...)
+
+          # Residuals FPC coefficients
+          E_star_hat_scores[, , j] <- fit_flm_star[["residuals_scores"]]
+
+          # Bootstrapped lambda and p_hat
+          boot_lambda[i] <- ifelse(is.null(fit_flm_star[["lambda"]]),
+                                   NA, fit_flm_star[["lambda"]])
+          boot_p_hat[[i]] <- fit_flm_star[["p_hat"]]
+
+        }
 
       }
 
-      # Compute bootstrap statistic
+      # Bootstrap statistic
       boot_stats[i] <- flm_stat(E = as.matrix(E_star_hat_scores[, , j]),
-                                p = p, Adot_vec = Adot_vec, constant = FALSE)
+                                p = p, Adot_vec = Adot_vec,
+                                constant = refit_lambda)
 
       # Display progress
       if (verbose) {
@@ -753,7 +819,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
 
       }
 
-      # Compute bootstrap statistic
+      # Bootstrap statistic
       boot_stats[i] <- flm_stat(E = as.matrix(E_star_hat_scores[, , j]),
                                 p = p, Adot_vec = Adot_vec, constant = FALSE)
 
@@ -771,8 +837,8 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   ## p-value and final result
 
   # Add constants to statistics
-  const <- 2 * pi^(0.5 * (p + q) - 1) /
-    (q * gamma(0.5 * p) * gamma(0.5 * q) * n^2)
+  const <- ifelse(refit_lambda, 1, 2 * pi^(0.5 * (p + q) - 1) /
+                    (q * gamma(0.5 * p) * gamma(0.5 * q) * n^2))
   orig_stat <- const * orig_stat
   boot_stats <- const * boot_stats
 
@@ -833,7 +899,9 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
       ylab <- substitute(R[n](u, hat(Psi)[i], hat(Phi)[j]),
                          list(i = ind_X_fpc, j = ind_Y_fpc))
       plot(Rn_processes[[1]], lwd = 2, pch = NA, ylim = ylim, main = main,
-           xlab = xlab, ylab = ylab)
+           xlab = "", ylab = "")
+      mtext(text = xlab, side = 1, line = 3, cex = 0.85)
+      mtext(text = ylab, side = 2, line = 2.5, cex = 0.85)
       rug(knots(Rn_processes[[1]]))
 
       # Add bootstrap processes
@@ -854,7 +922,8 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
     # Produce the pairs plot
     p_max <- min(length(p_hat), plot_max_p)
     q_max <- min(length(q_thre), plot_max_q)
-    par(mfrow = c(p_max, q_max))
+    par(mfrow = c(p_max, q_max),
+        mar = c(4, 4, 3, 2) + 0.1)
     for (i in p_hat[1:p_max]) {
       for (j in q_thre[1:q_max]) {
 
@@ -880,6 +949,8 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   if (!save_boot_stats) {
 
     boot_stats <- NA
+    boot_lambda <- NA
+    boot_p_hat <- NA
 
   }
 
@@ -888,6 +959,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
                            p.value = p_value, boot_statistics = boot_stats,
                            method = meth, parameter = c("p" = p, "q" = q),
                            p = p_hat, q = q_thre, fit_flm = fit_flm,
+                           boot_lambda = boot_lambda, boot_p = boot_p_hat,
                            data.name = data_name))
   class(result) <- "htest"
   return(result)
