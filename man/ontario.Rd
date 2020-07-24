@@ -4,7 +4,8 @@
 \name{ontario}
 \alias{ontario}
 \title{Ontario temperature and electricity consumption during 2010--2014}
-\format{A list with the following entries:
+\format{
+A list with the following entries:
 \describe{
   \item{temp}{an \code{\link[fda.usc]{fdata}} with 368 smoothed
   daily temperature (in Celsius degrees) curves of the Ontario province,
@@ -19,7 +20,8 @@
     object.}
     \item{\code{weekday}: the weekday of the observation.}
   }}
-}}
+}
+}
 \source{
 The dataset comes from the companion data to Benatia et al. (2017), which
 was retrieved from the \href{http://davidbenatia.com/research}{first
@@ -77,7 +79,7 @@ abline(v = 24 * -2:3, lty = 2)
 legend("top", legend = c("Curve 1", "Curve 2", "Curve 3"), col = c(3, 1, 2),
        pt.cex = c(1, 1, 1.5), pch = c(2, 16, 1))
 
-# If the days are not consevutive, then the electricity consumptions at the
+# If the days are not consecutive, then the electricity consumptions at the
 # end of one day and the beginning of the next do not match
 head(abs(ontario$elec$data[-368, 25] - ontario$elec$data[-1, 1]))
 head(diff(ontario$df$date))
