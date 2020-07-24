@@ -22,7 +22,7 @@ Description: Implementation of several goodness-of-fit tests for functional
 License: GPL-3
 LazyData: true
 Depends:
-    R (>= 3.6.3),
+    R (>= 3.6.0),
     Rcpp
 Imports:
     fda.usc,
