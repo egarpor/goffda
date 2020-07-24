@@ -4,7 +4,8 @@
 \name{aemet_temp}
 \alias{aemet_temp}
 \title{AEMET daily temperatures during 1974--2013}
-\format{A list with the following entries:
+\format{
+A list with the following entries:
 \describe{
   \item{temp}{an \code{\link[fda.usc]{fdata}} with 2892 temperature
   (in Celsius degrees) curves, discretized on 365 equispaced
@@ -16,7 +17,8 @@
     \item{\code{name}: name of the weather station.}
     \item{\code{year}: year of the observation.}
   }}
-}}
+}
+}
 \source{
 The data was retrieved from the FTP of the
 \href{http://www.aemet.es/}{Meteorological State Agency of Spain (AEMET)} in

@@ -9,7 +9,7 @@ flm_test(X, Y, beta0 = NULL, B = 500, est_method = "fpcr", p = NULL,
   boot_scores = TRUE, verbose = TRUE, plot_dens = TRUE,
   plot_proc = TRUE, plot_max_procs = 100, plot_max_p = 2,
   plot_max_q = 2, save_fit_flm = TRUE, save_boot_stats = TRUE,
-  int_rule = "trapezoid", ...)
+  int_rule = "trapezoid", refit_lambda = FALSE, ...)
 }
 \arguments{
 \item{X, Y}{samples of functional/scalar predictors and functional/scalar
@@ -76,13 +76,17 @@ considered in the graphical tool. They limit the resulting plot to be at
 most of size \code{c(plot_max_p, plot_max_q)}. Default to \code{2}.}
 
 \item{save_fit_flm, save_boot_stats}{flag to return \code{fit_flm} and
-\code{boot_statistics}. If \code{FALSE}, these memory-expensive objects
+\code{boot_*}. If \code{FALSE}, these memory-expensive objects
 are set to \code{NA}. Default to \code{TRUE}.}
 
 \item{int_rule}{quadrature rule for approximating the definite
 unidimensional integral: trapezoidal rule (\code{int_rule = "trapezoid"})
 and extended Simpson rule (\code{int_rule = "Simpson"}) are available.
 Defaults to \code{"trapezoid"}.}
+
+\item{refit_lambda}{flag to reselect \eqn{lambda} in each bootstrap
+replicate, incorporating its variability in the bootstrap calibration.
+Much more time consumig. Defaults to \code{FALSE}.}
 
 \item{...}{further parameters to be passed to \code{\link{cv_glmnet}}
 (and then to \code{\link[glmnet]{cv.glmnet}}) such as \code{cv_1se},
@@ -98,9 +102,12 @@ of length \code{B}.}
 \item{parameter}{a vector with the dimensions \eqn{p} and \eqn{q}
 considered in the test statistic. These are the lengths of the outputs
 \code{p} and \code{q}.}
-\item{p}{the index of the FPC considered for \code{x}.}
-\item{q}{the index of the FPC considered for \code{y}.}
+\item{p}{the index of the FPC considered for \code{X}.}
+\item{q}{the index of the FPC considered for \code{Y}.}
 \item{fit_flm}{the output resulted from calling \code{\link{flm_est}}.}
+\item{boot_lambda}{bootstrapped \eqn{lambda}.}
+\item{boot_p}{a list with the bootstrapped indexes of the FPC considered
+for \code{X}.}
 \item{data.name}{name of the value of \code{data}.}
 }
 \description{
