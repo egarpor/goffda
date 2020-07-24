@@ -68,8 +68,9 @@ functional variables. Defaults to \code{50}.}
 Defaults to \code{FALSE}.}
 
 \item{...}{further parameters passed to
-\code{\link[goffda]{r_cm2013_flmfr}}, \code{\link[goffda]{r_gof2019_flmfr}}
-and\cr \code{\link[goffda]{r_ik2018_flmfr}}, depending on the
+\code{\link[goffda:elem-flmfr]{r_cm2013_flmfr}},
+\code{\link[goffda:elem-flmfr]{r_gof2019_flmfr}} and\cr 
+\code{\link[goffda:elem-flmfr]{r_ik2018_flmfr}}, depending on the
 chosen \code{scenario}.}
 
 \item{equispaced}{flag to indicate if \code{X_fdata$data} is valued in

@@ -55,8 +55,9 @@
 #' @param verbose flag to display information about the sampling procedure.
 #' Defaults to \code{FALSE}.
 #' @param ... further parameters passed to
-#' \code{\link[goffda]{r_cm2013_flmfr}}, \code{\link[goffda]{r_gof2019_flmfr}}
-#' and\cr \code{\link[goffda]{r_ik2018_flmfr}}, depending on the
+#' \code{\link[goffda:elem-flmfr]{r_cm2013_flmfr}},
+#' \code{\link[goffda:elem-flmfr]{r_gof2019_flmfr}} and\cr 
+#' \code{\link[goffda:elem-flmfr]{r_ik2018_flmfr}}, depending on the
 #' chosen \code{scenario}.
 #' @return A list with the following elements:
 #' \item{\code{X_fdata}}{functional covariates, an

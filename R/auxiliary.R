@@ -5,7 +5,7 @@
 #' @description Auxiliary functions required for the methods
 #' implemented in the \pkg{goffda} package, as enhancements of the auxiliary
 #' functions \code{\link[fda.usc]{fdata.cen}} and
-#' \code{\link[fda.usc]{func.mean}} from the
+#' \code{\link[fda.usc:Descriptive]{func.mean}} from the
 #' \code{\link[fda.usc]{fda.usc-package}}.
 #'
 #' @param X_fdata sample of functional data as an
