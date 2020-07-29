@@ -1,0 +1,18 @@
+
+year <- sub("-.*", "", meta$Date)
+note <- paste("R package version", meta$Version)
+
+citHeader("To cite goffda in publications use:")
+
+citEntry(entry = "Manual",
+  title        = "{goffda}: Goodness-of-Fit Tests for Functional Data",
+    author     = personList(as.person("Eduardo Garc\\'ia-Portugu\\'es"),
+                   as.person("Javier \\'Alvarez-Li\\'ebana")),
+  year         = year,
+  note         = note,
+  url          = "https://CRAN.R-project.org/package=goffda",
+  textVersion  =
+  paste(paste0("García-Portugués, E. and Álvarez-Liébana, J. (", year, ")."),
+        "goffda: Goodness-of-Fit Tests for Functional Data.",
+        paste0(note, "."), "https://CRAN.R-project.org/package=goffda")
+)
