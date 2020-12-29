@@ -1,15 +1,17 @@
-# goffda
+goffda
+======
 
-<!-- badges: start -->
+[![License:
+GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+[![](https://travis-ci.org/egarpor/goffda.svg?branch=master)](https://travis-ci.org/egarpor/goffda)
+[![](https://www.r-pkg.org/badges/version/goffda?color=green)](https://cran.r-project.org/package=goffda)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/goffda?color=green)](https://cran.r-project.org/package=goffda)
+[![](http://cranlogs.r-pkg.org/badges/last-month/goffda?color=green)](https://cran.r-project.org/package=goffda)
 
-[![License](https://img.shields.io/badge/license-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Travis build
-status](https://travis-ci.org/egarpor/goffda.svg?branch=master)](https://travis-ci.org/egarpor/goffda)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/goffda)](https://cran.r-project.org/package=goffda)
-<!-- badges: end -->
+<!-- <img src="" alt="goffda  hexlogo" align="right" width="200" style="padding: 0 15px; float: right;"/> -->
 
-## Overview
+Overview
+--------
 
 Software companion for the paper “*A goodness-of-fit test for the
 functional linear model with functional response*” (García-Portugués,
@@ -18,7 +20,8 @@ implements the proposed estimators and goodness-of-fit tests for the
 functional linear model with scalar response. It also allows to
 replicate the data application presented.
 
-## Installation
+Installation
+------------
 
 Get the released version from CRAN:
 
@@ -41,7 +44,8 @@ install_github("egarpor/goffda")
 library(goffda)
 ```
 
-## Usage
+Usage
+-----
 
 The following are some simple examples of the usage of the main function
 of the package, `flm_test`. More examples are available in `?flm_test`.
@@ -66,7 +70,7 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
     #> 
     #> data:  Y_fdata ~ X_fdata
     #> statistic = 0.0004656, p = 17, q = 20, p-value = 0.072
-    
+
     # Simple hypothesis
     flm_test(X = X_fdata, Y = Y_fdata, beta0 = 0, verbose = FALSE)
 
@@ -78,7 +82,7 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
     #> 
     #> data:  Y_fdata ~ X_fdata
     #> statistic = 0.00077811, p = 17, q = 20, p-value = 0.73
-    
+
     # Generate data under H1
     n <- 100
     set.seed(987654321)
@@ -86,7 +90,7 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
                               t = seq(0, 1, l = 101), nonlinear = "quadratic")
     X_fdata <- sample_frm_fr[["X_fdata"]]
     Y_fdata <- sample_frm_fr[["Y_fdata"]]
-    
+
     # Test the FLMFR
     flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
 
@@ -99,7 +103,8 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
     #> data:  Y_fdata ~ X_fdata
     #> statistic = 290.71, p = 4, q = 7, p-value < 2.2e-16
 
-## AEMET temperatures data
+AEMET temperatures data
+-----------------------
 
 An illustration of the test application in a real dataset.
 
@@ -173,24 +178,27 @@ filled.contour(x = aemet_temp_pred$argvals, y = aemet_temp_resp$argvals,
 
 <img src="README/README-aemet-2.png" style="display: block; margin: auto;" />
 
-## References
+References
+----------
 
 García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
 González-Manteiga, W. (2019). A goodness-of-fit test for the functional
 linear model with functional response. *arXiv:1909.07686*.
-<https://arxiv.org/abs/1909.07686>
+<a href="https://arxiv.org/abs/1909.07686" class="uri">https://arxiv.org/abs/1909.07686</a>
 
 Cuesta-Albertos, J. A., García-Portugués, E., Febrero-Bande, M. and
 González-Manteiga, W. (2019). Goodness-of-fit tests for the functional
 linear model based on randomly projected empirical processes. *Annals of
-Statistics*, 47(1):439-467. <https://doi.org/10.1214/18-AOS1693>
+Statistics*, 47(1):439-467.
+<a href="https://doi.org/10.1214/18-AOS1693" class="uri">https://doi.org/10.1214/18-AOS1693</a>
 
 Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical
 Computing in Functional Data Analysis: The R Package fda.usc. *Journal
 of Statistical Software*, 51(4):1-28.
-<http://www.jstatsoft.org/v51/i04/>
+<a href="http://www.jstatsoft.org/v51/i04/" class="uri">http://www.jstatsoft.org/v51/i04/</a>
 
 García-Portugués, E., González-Manteiga, W. and Febrero-Bande, M.
 (2014). A goodness-of-fit test for the functional linear model with
 scalar response. *Journal of Computational and Graphical Statistics*,
-23(3):761-778. <http://doi.org/10.1080/10618600.2013.812519>
+23(3):761-778.
+<a href="http://doi.org/10.1080/10618600.2013.812519" class="uri">http://doi.org/10.1080/10618600.2013.812519</a>
