@@ -170,8 +170,10 @@ fpc <- function(X_fdata, n_fpc = 3, centered = FALSE, int_rule = "trapezoid",
 
     # FPC are computed by performing a Singular Value Decomposition
     # X * weights^{1/2} = U * D * (V' * weights^{1/2}), more efficient than
-    # solving the eigenequation as usual
-    eigenres <- svd(X_fdata[["data"]] %*% mat_weights)
+    # solving the eigenequation as usual. X is multiplied by a factor
+    # 1/sqrt(n), being n the sample size, such that FPC are the
+    # eigenfunctions of C_n(s, t) = (1/n) * sum_{i=1}^{n} (X_i \otimes X_i)
+    eigenres <- svd((1/dim(X_fdata[["data"]])[1]) * X_fdata[["data"]] %*% mat_weights)
 
     # Functional Principal Components: eigenfunctions must be multiplied by the
     # inverse of the square root of weights to obtain orthonormal eigenfunctions
