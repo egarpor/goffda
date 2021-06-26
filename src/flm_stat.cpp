@@ -162,7 +162,7 @@ double flm_stat(arma::mat E, int p, arma::vec Adot_vec, bool constant = true) {
   double c = 1;
   if (constant) {
 
-    c = (2 * std::pow(PI, 0.5 * (p + q) - 1)) /
+    c = (2 * std::pow(M_PI, 0.5 * (p + q) - 1)) /
       (q * R::gammafn(0.5 * p) * R::gammafn(0.5 * q) * n * n);
 
   }
@@ -225,7 +225,7 @@ arma::vec Adot(arma::mat X) {
   arma::vec Adot_vec = arma::zeros(n * (n - 1) / 2 + 1);
 
   // The first element of Adot_vec is the common diagonal element
-  Adot_vec[0] = PI * (n + 1);
+  Adot_vec[0] = M_PI * (n + 1);
 
   // Loop on the rest of the elements are the lower triangle matrix of Adot
   for (arma::uword i = 2; i <= n; i++) {
@@ -239,7 +239,7 @@ arma::vec Adot(arma::mat X) {
         if ((i == r) | (j == r)) {
 
           // Sum variable
-          sum_r += PI;
+          sum_r += M_PI;
 
         } else {
 
