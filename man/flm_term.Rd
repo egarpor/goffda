@@ -82,9 +82,9 @@ plot(Y_fdata)
 }
 \references{
 García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-González-Manteiga, W. (2019). A goodness-of-fit test for the functional
-linear model with functional response. \emph{arXiv:1909.07686}.
-\url{https://arxiv.org/abs/1909.07686}
+Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+linear model with functional response. \emph{Scandinavian Journal of
+Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 }
 \author{
 Javier Álvarez-Liébana.
