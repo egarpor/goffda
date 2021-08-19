@@ -6,7 +6,7 @@ citHeader("To cite goffda in publications use:")
 
 citEntry(entry = "Manual",
   title        = "{goffda}: Goodness-of-Fit Tests for Functional Data",
-    author     = personList(as.person("Eduardo Garc\\'ia-Portugu\\'es"),
+  author       = personList(as.person("Eduardo Garc\\'ia-Portugu\\'es"),
                    as.person("Javier \\'Alvarez-Li\\'ebana")),
   year         = year,
   note         = note,
@@ -16,3 +16,23 @@ citEntry(entry = "Manual",
         "goffda: Goodness-of-Fit Tests for Functional Data.",
         paste0(note, "."), "https://CRAN.R-project.org/package=goffda")
 )
+
+citEntry(entry = "Article",
+  title        = "A goodness-of-fit test for the functional linear model with functional response",
+  author       = personList(as.person("Eduardo Garc\\'ia-Portugu\\'es"),
+                   as.person("Javier \\'Alvarez-Li\\'ebana"),
+                   as.person("Gonzalo \\'Alvarez-P\\'erez"),
+                   as.person("Wenceslao Gonzalez-Manteiga")),
+  journal      = "Scandinavian Journal of Statistics",
+  year         = "2021",
+  volume       = "48",
+  number       = "2",
+  pages        = "502--528",
+  url          = "https://doi.org/10.1111/sjos.12486",
+  textVersion  =
+  paste("García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G., and González-Manteiga, W. (2021).",
+        "A goodness-of-fit test for the functional linear model with functional response.",
+        "Scandinavian Journal of Statistics, 48(2):502-528.",
+        "https://doi.org/10.1111/sjos.12486")
+)
+
