@@ -1,26 +1,26 @@
 Package: goffda
 Type: Package
 Title: Goodness-of-Fit Tests for Functional Data
-Version: 0.0.7
-Date: 2020-07-22
+Version: 0.1.0
+Date: 2021-08-19
 Authors@R: c(
-     person(given = "Eduardo", family = "García-Portugués",
-            role = c("aut", "cre"), email = "edgarcia@est-econ.uc3m.es",
-	    comment = c(ORCID = "0000-0002-9224-4111")),
-     person("Javier", "Álvarez-Liébana", role = "aut",
-            email = "alvarezljavier@uniovi.es",
-	    comment = c(ORCID = "0000-0003-0671-3856")),
-     person("Gonzalo", "Álvarez-Pérez", role = "ctb",
-            email = "gonzaloalvarez@uniovi.es"),
-     person("Manuel", "Febrero-Bande", role = "ctb",
-            email = "manuel.febrero@usc.es")
-     )
+    person(given = "Eduardo", family = "García-Portugués",
+           role = c("aut", "cre"), email = "edgarcia@est-econ.uc3m.es",
+           comment = c(ORCID = "0000-0002-9224-4111")),
+    person("Javier", "Álvarez-Liébana", role = "aut",
+           email = "alvarezljavier@uniovi.es",
+           comment = c(ORCID = "0000-0003-0671-3856")),
+    person("Gonzalo", "Álvarez-Pérez", role = "ctb",
+           email = "gonzaloalvarez@uniovi.es"),
+    person("Manuel", "Febrero-Bande", role = "ctb",
+           email = "manuel.febrero@usc.es")
+    )
 Description: Implementation of several goodness-of-fit tests for functional
-     data. Currently, mostly related with the functional linear model with
-     functional/scalar response and functional/scalar predictor. The package
-     allows for the replication of the data applications considered in
-     García-Portugués, Álvarez-Liébana, Álvarez-Pérez and González-Manteiga
-     (2019) <arXiv:1909.07686>.
+    data. Currently, mostly related with the functional linear model with
+    functional/scalar response and functional/scalar predictor. The package
+    allows for the replication of the data applications considered in
+    García-Portugués, Álvarez-Liébana, Álvarez-Pérez and González-Manteiga
+    (2021) <doi:doi:10.1111/sjos.12486>.
 License: GPL-3
 LazyData: true
 Depends:
@@ -39,5 +39,5 @@ LinkingTo: Rcpp, RcppArmadillo
 URL: https://github.com/egarpor/goffda
 BugReports: https://github.com/egarpor/goffda
 Encoding: UTF-8
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1
 Roxygen: list(old_usage = TRUE)

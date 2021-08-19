@@ -322,7 +322,7 @@ cv1$beta_hat
 \references{
 Friedman, J., Hastie, T. and Tibshirani, R. (2010). Regularization paths for
 generalized linear models via coordinate descent. \emph{Journal of
-Statistical Software}, 33(1):1--22. \url{http://www.jstatsoft.org/v33/i01/}
+Statistical Software}, 33(1):1--22. \url{https://www.jstatsoft.org/v33/i01/}
 }
 \author{
 Eduardo García-Portugués. Initial contributions by Gonzalo

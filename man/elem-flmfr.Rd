@@ -4,7 +4,7 @@
 \alias{elem-flmfr}
 \alias{r_cm2013_flmfr}
 \alias{r_ik2018_flmfr}
-\alias{r_gof2019_flmfr}
+\alias{r_gof2021_flmfr}
 \title{Covariate, error, and kernel of a functional linear model
 with functional response}
 \usage{
@@ -15,7 +15,7 @@ r_ik2018_flmfr(n, s = seq(0, 1, l = 101), t = seq(0, 1, l = 101),
   std_error = 1.5, parameters = c(1.75, 0.8, 2.4, 0.25), n_fpc = 50,
   concurrent = FALSE)
 
-r_gof2019_flmfr(n, s = seq(0, 1, len = 101), t = seq(0, 1, len = 101),
+r_gof2021_flmfr(n, s = seq(0, 1, len = 101), t = seq(0, 1, len = 101),
   std_error = 0.35, concurrent = FALSE)
 }
 \arguments{
@@ -65,14 +65,14 @@ construct \eqn{\beta}, using different proposals in the literature:
 \itemize{
   \item{\code{r_cm2013_flmfr} is based on the numerical example given in
   Section 3 of Crambes and Mas (2013). Termed as S1 in Section 2 of
-  García-Portugués et al. (2019).}
+  García-Portugués et al. (2021).}
   \item{\code{r_ik2018_flmfr} is based on the numerical example given in
   Section 4 of Imaizumi and Kato (2018), but zeroing the first Functional
   Principal Components (FPC) coefficients of \eqn{\beta} (so the first FPC
   are not adequate for estimation). S3 in Section 2 of
-  García-Portugués et al. (2019).}
-  \item{\code{r_gof2019_flmfr} gives a numerical example in Section 2
-  of García-Portugués et al. (2019), denoted therein as S2.}
+  García-Portugués et al. (2021).}
+  \item{\code{r_gof2021_flmfr} gives a numerical example in Section 2
+  of García-Portugués et al. (2021), denoted therein as S2.}
 }
 }
 \details{
@@ -96,33 +96,33 @@ plot(r_cm2013$X_fdata)
 plot(r_cm2013$error_fdata)
 image(x = s, y = t, z = r_cm2013$beta, col = viridisLite::viridis(20))
 
-# FLMFR in García-Portugués et al. (2019) adopting different Hilbert spaces
-r_gof2019 <- r_gof2019_flmfr(n = 50, s = s, t = t, std_error = 0.35,
+# FLMFR in García-Portugués et al. (2021) adopting different Hilbert spaces
+r_gof2021 <- r_gof2021_flmfr(n = 50, s = s, t = t, std_error = 0.35,
                              concurrent = FALSE)
-plot(r_gof2019$X_fdata)
-plot(r_gof2019$error_fdata)
-image(x = s, y = t, z = r_gof2019$beta, col = viridisLite::viridis(20))
+plot(r_gof2021$X_fdata)
+plot(r_gof2021$error_fdata)
+image(x = s, y = t, z = r_gof2021$beta, col = viridisLite::viridis(20))
 
-# Concurrent model in García-Portugués et al. (2019)
-r_gof2019 <- r_gof2019_flmfr(n = 50, s = s, t = s, std_error = 0.35,
+# Concurrent model in García-Portugués et al. (2021)
+r_gof2021 <- r_gof2021_flmfr(n = 50, s = s, t = s, std_error = 0.35,
                              concurrent = TRUE)
-plot(r_gof2019$X_fdata)
-plot(r_gof2019$error_fdata)
-plot(r_gof2019$beta)
+plot(r_gof2021$X_fdata)
+plot(r_gof2021$error_fdata)
+plot(r_gof2021$beta)
 }
 \references{
 Cardot, H. and Mas, A. (2013). Asymptotics of prediction in functional linear
 regression with functional outputs. \emph{Bernoulli}, 19(5B):2627--2651.
-\url{https://doi.org/10.3150/12-BEJ469}
+\doi{10.3150/12-BEJ469}
 
 Imaizumi, M. and Kato, K. (2018). PCA-based estimation for functional linear
 regression with functional responses. \emph{Journal of Multivariate
-Analysis}, 163:15--36. \url{https://doi.org/10.1016/j.jmva.2017.10.001}
+Analysis}, 163:15--36. \doi{10.1016/j.jmva.2017.10.001}
 
 García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-Gonzalez-Manteiga, W. (2019). A goodness-of-fit test
-linear model with functional response. \emph{arXiv:1909.07686}.
-\url{https://arxiv.org/abs/1909.07686}
+Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+linear model with functional response. \emph{Scandinavian Journal of
+Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 }
 \author{
 Javier Álvarez-Liébana.

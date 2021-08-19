@@ -21,8 +21,8 @@ A list with the following entries:
 }
 \source{
 The data was retrieved from the FTP of the
-\href{http://www.aemet.es/}{Meteorological State Agency of Spain (AEMET)} in
-2014 using a processing script by the authors of the
+\href{https://www.aemet.es/}{Meteorological State Agency of Spain (AEMET)}
+in 2014 using a processing script by the authors of the
 \code{\link[fda.usc]{fda.usc-package}}.
 }
 \usage{
@@ -133,7 +133,7 @@ abline(h = 1 / 365, col = 2)
 \references{
 Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical Computing
 in Functional Data Analysis: The R Package fda.usc. \emph{Journal of
-Statistical Software}, 51(4):1--28. \url{http://www.jstatsoft.org/v51/i04/}
+Statistical Software}, 51(4):1--28. \url{https://www.jstatsoft.org/v51/i04/}
 }
 \author{
 Original data processing scripts by Manuel Febrero-Bande and Manuel Oviedo
