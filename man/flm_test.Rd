@@ -145,14 +145,14 @@ for which \eqn{\beta} is a constant.
 The function implements the bootstrap-based goodness-of-fit test for
 the functional linear model with functional/scalar response and
 functional/scalar predictor, as described in Algorithm 1 in
-García-Portugués et al. (2019). The specifics are detailed there.
+García-Portugués et al. (2021). The specifics are detailed there.
 
 By default \code{cv_1se = TRUE} for \code{\link{cv_glmnet}} is
 considered, unless it is changed via \code{...}. This is the recommended
 choice for conducting the goodness-of-fit test based on regularized
 estimators, as the oversmoothed estimate of the regression model under the
 null hypothesis notably facilitates the calibration of the test (see
-García-Portugués et al., 2019).
+García-Portugués et al., 2021).
 
 The graphical tool obtained with \code{plot_proc = TRUE} is based on
 an extension of the tool described in García-Portugués et al. (2014).
@@ -343,14 +343,14 @@ flm_test(X = X, Y = Y_fdata, est_method = "fpcr", boot_scores = FALSE, B = B)
 }
 \references{
 García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-González-Manteiga, W. (2019). A goodness-of-fit test for the functional
-linear model with functional response. \emph{arXiv:1909.07686}.
-\url{https://arxiv.org/abs/1909.07686}
+Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+linear model with functional response. \emph{Scandinavian Journal of
+Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 
 García-Portugués, E., González-Manteiga, W. and Febrero-Bande, M. (2014). A
 goodness-of-fit test for the functional linear model with scalar response.
 \emph{Journal of Computational and Graphical Statistics}, 23(3):761--778.
-\url{http://doi.org/10.1080/10618600.2013.812519}
+\doi{10.1080/10618600.2013.812519}
 }
 \author{
 Eduardo García-Portugués.

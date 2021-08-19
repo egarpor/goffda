@@ -43,18 +43,18 @@
 #' (2017).
 #' @source
 #' The dataset comes from the companion data to Benatia et al. (2017), which
-#' was retrieved from the \href{http://davidbenatia.com/research}{first
-#' author's website}. The source of the electricity consumption data is the
-#' \href{http://www.ieso.ca}{System operator's website}. The source of the
-#' preprocessed temperature values is the
-#' \href{http://climat.meteo.gc.ca/}{Environment Canada's website}.
+#' was retrieved from the \href{https://davidbenatia.wordpress.com/research/}{
+#' first author's website}. The source of the electricity consumption data is
+#' the \href{https://www.ieso.ca/}{System operator's website}. The source
+#' of the preprocessed temperature values is the
+#' \href{https://climat.meteo.gc.ca/}{Environment Canada's website}.
 #' @author Data gathered and processed by David Benatia, Marine Carrasco, and
 #' Jean-Pierre Florens. Javier Álvarez-Liébana and Eduardo García-Portugués
 #' imported the dataset and added temporal metadata.
 #' @references
 #' Benatia, D., Carrasco, M. and Florens, J. P. (2017) Functional linear
 #' regression with functional response. \emph{Journal of Econometrics},
-#' 201(2):269--291. \url{https://doi.org/10.1016/j.jeconom.2017.08.008}
+#' 201(2):269--291. \doi{10.1016/j.jeconom.2017.08.008}
 #' @examples
 #' ## Show data
 #'
@@ -137,8 +137,8 @@
 #' In leap years, the daily-average temperature is computed as the average of
 #' February 28th and 29th.
 #' @source The data was retrieved from the FTP of the
-#' \href{http://www.aemet.es/}{Meteorological State Agency of Spain (AEMET)} in
-#' 2014 using a processing script by the authors of the
+#' \href{http://www.aemet.es/es/portada/}{Meteorological State Agency of Spain
+#' (AEMET)} in 2014 using a processing script by the authors of the
 #' \code{\link[fda.usc]{fda.usc-package}}.
 #' @author
 #' Original data processing scripts by Manuel Febrero-Bande and Manuel Oviedo
@@ -146,7 +146,7 @@
 #' @references
 #' Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical Computing
 #' in Functional Data Analysis: The R Package fda.usc. \emph{Journal of
-#' Statistical Software}, 51(4):1--28. \url{http://www.jstatsoft.org/v51/i04/}
+#' Statistical Software}, 51(4):1--28. \url{https://www.jstatsoft.org/v51/i04/}
 #' @examples
 #' ## Data splitting
 #'

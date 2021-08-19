@@ -16,7 +16,7 @@ B <- 1e4
 # Save figures?
 save_fig <- TRUE
 
-# Improve visualizaation of saved figures
+# Improve visualization of saved figures
 if (save_fig) {
 
   pdf <- function(..., cex.spe = 1.85) {

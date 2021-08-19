@@ -6,6 +6,11 @@
 
 using namespace Rcpp;
 
+#ifdef RCPP_USE_GLOBAL_ROSTREAM
+Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
+Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
+#endif
+
 // flm_stat
 double flm_stat(arma::mat E, int p, arma::vec Adot_vec, bool constant);
 RcppExport SEXP _goffda_flm_stat(SEXP ESEXP, SEXP pSEXP, SEXP Adot_vecSEXP, SEXP constantSEXP) {

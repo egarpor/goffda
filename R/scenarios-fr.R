@@ -13,13 +13,13 @@
 #' \eqn{\varepsilon}{\epsilon} is a random variable in \eqn{L^2([c, d])},
 #' and \eqn{\Delta(X)}{\Delta(X)} is a nonlinear term.
 #'
-#' In particular, the scenarios considered in García-Portugués et al. (2019)
+#' In particular, the scenarios considered in García-Portugués et al. (2021)
 #' can be easily simulated.
 #'
 #' @param n sample size, only required when \code{scenario} is given.
 #' @param scenario an index from \code{1} to \code{3} (default) denoting
 #' one of the scenarios (S1, S2 or S3) simulated in
-#' García-Portugués et al. (2019) (see details below). If
+#' García-Portugués et al. (2021) (see details below). If
 #' \code{scenario = NULL}, \code{X_fdata}, \code{error_fdata}, and \code{beta}
 #' have to be provided. Otherwise, \code{X_fdata}, \code{error_fdata}, and
 #' \code{beta} will be ignored.
@@ -56,7 +56,7 @@
 #' Defaults to \code{FALSE}.
 #' @param ... further parameters passed to
 #' \code{\link[goffda:elem-flmfr]{r_cm2013_flmfr}},
-#' \code{\link[goffda:elem-flmfr]{r_gof2019_flmfr}} and\cr 
+#' \code{\link[goffda:elem-flmfr]{r_gof2021_flmfr}} and\cr 
 #' \code{\link[goffda:elem-flmfr]{r_ik2018_flmfr}}, depending on the
 #' chosen \code{scenario}.
 #' @return A list with the following elements:
@@ -78,9 +78,9 @@
 #'   \item{\code{r_frm_fr} samples the above regression model,
 #'   where the nonlinear term \eqn{\Delta(X)} is computed by \code{nl_dev}.
 #'   Functional covariates, errors, and \eqn{\beta} are generated
-#'   automatically from the scenarios in García-Portugués et al. (2019) when
+#'   automatically from the scenarios in García-Portugués et al. (2021) when
 #'   \code{scenario != NULL} (see the documentation of
-#'   \code{\link{r_gof2019_flmfr}}). If \code{scenario = NULL},
+#'   \code{\link{r_gof2021_flmfr}}). If \code{scenario = NULL},
 #'   covariates, errors and \eqn{\beta} must be provided.
 #'
 #'   When \code{concurrent = TRUE}, the concurrent FRMFR
@@ -148,7 +148,7 @@
 #' t <- seq(2, 4, len = 151)
 #' X_fdata <- r_ou(n = 100, t = s, alpha = 2, sigma = 4, x0 = 1:100)
 #' error_fdata <- r_ou(n = 100, t = t, alpha = 1, sigma = 1, x0 = 1:100)
-#' beta <- r_gof2019_flmfr(n = 100, s = s, t = t)$beta
+#' beta <- r_gof2021_flmfr(n = 100, s = s, t = t)$beta
 #' samp_Xeps <- r_frm_fr(scenario = NULL, X_fdata = X_fdata,
 #'                       error_fdata = error_fdata, beta = beta,
 #'                       nonlinear = "exp", int_rule = "trapezoid")
@@ -162,9 +162,9 @@
 #' @author Javier Álvarez-Liébana.
 #' @references
 #' García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-#' Gonzalez-Manteiga, W. (2019). A goodness-of-fit test
-#' linear model with functional response. \emph{arXiv:1909.07686}.
-#' \url{https://arxiv.org/abs/1909.07686}
+#' Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+#' linear model with functional response. \emph{Scandinavian Journal of
+#' Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 #' @name sim-frmfr
 
 
@@ -177,7 +177,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
                      n_fpc = 50, verbose = FALSE, ...) {
 
   # If scenario != NULL, some of the scenarios in
-  # García-Portugués et al. (2019) will be generated
+  # García-Portugués et al. (2021) will be generated
   if (!is.null(scenario)) {
 
     # If scenario is not NULL, X_fdata = NULL, error_fdata = NULL and
@@ -196,7 +196,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
 
       stop(paste("Scenario encoded by", scenario, "is not implemented. Only",
                  "scenarios 1 (Crambes and Mas, 2013),",
-                 "2 (Garcia-Portugues et al., 2019) and",
+                 "2 (Garcia-Portugues et al., 2021) and",
                  "3 (Imaizumi and Kato, 2018) are directly implemented"))
 
     }
@@ -273,7 +273,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
   }
 
   # Sampling adopting one of the scenarios considered in
-  # García-Portugués et al. (2019)
+  # García-Portugués et al. (2021)
   if (!is.null(scenario)) {
 
     # S1: based on the data simluated by Crambes and Mas 2013 (Section 3)
@@ -290,17 +290,17 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
 
     }
 
-    # S2: example of García-Portugués et al. 2019 (Sections 2 and 4)
+    # S2: example of García-Portugués et al. 2021 (Sections 2 and 4)
     if (scenario == 2) {
 
       # Sampling functional covariates and functional errors
-      gof2019 <- r_gof2019_flmfr(n = n, s = s, t = t, std_error = std_error,
+      gof2021 <- r_gof2021_flmfr(n = n, s = s, t = t, std_error = std_error,
                                  concurrent = concurrent)
-      X_fdata <- gof2019[["X_fdata"]]
-      error_fdata <- gof2019[["error_fdata"]]
+      X_fdata <- gof2021[["X_fdata"]]
+      error_fdata <- gof2021[["error_fdata"]]
 
       # beta(s,t) (or beta(t) for the concurrent model) valued in grid points
-      beta <- gof2019[["beta"]]
+      beta <- gof2021[["beta"]]
 
     }
 
@@ -491,14 +491,14 @@ nl_dev <- function(X_fdata, t = seq(0, 1, l = 101), nonlinear = NULL,
 #' \itemize{
 #'   \item{\code{r_cm2013_flmfr} is based on the numerical example given in
 #'   Section 3 of Crambes and Mas (2013). Termed as S1 in Section 2 of
-#'   García-Portugués et al. (2019).}
+#'   García-Portugués et al. (2021).}
 #'   \item{\code{r_ik2018_flmfr} is based on the numerical example given in
 #'   Section 4 of Imaizumi and Kato (2018), but zeroing the first Functional
 #'   Principal Components (FPC) coefficients of \eqn{\beta} (so the first FPC
 #'   are not adequate for estimation). S3 in Section 2 of
-#'   García-Portugués et al. (2019).}
-#'   \item{\code{r_gof2019_flmfr} gives a numerical example in Section 2
-#'   of García-Portugués et al. (2019), denoted therein as S2.}
+#'   García-Portugués et al. (2021).}
+#'   \item{\code{r_gof2021_flmfr} gives a numerical example in Section 2
+#'   of García-Portugués et al. (2021), denoted therein as S2.}
 #' }
 #'
 #' @param s,t grid points where functional covariates and responses are valued,
@@ -542,33 +542,33 @@ nl_dev <- function(X_fdata, t = seq(0, 1, l = 101), nonlinear = NULL,
 #' plot(r_cm2013$error_fdata)
 #' image(x = s, y = t, z = r_cm2013$beta, col = viridisLite::viridis(20))
 #'
-#' # FLMFR in García-Portugués et al. (2019) adopting different Hilbert spaces
-#' r_gof2019 <- r_gof2019_flmfr(n = 50, s = s, t = t, std_error = 0.35,
+#' # FLMFR in García-Portugués et al. (2021) adopting different Hilbert spaces
+#' r_gof2021 <- r_gof2021_flmfr(n = 50, s = s, t = t, std_error = 0.35,
 #'                              concurrent = FALSE)
-#' plot(r_gof2019$X_fdata)
-#' plot(r_gof2019$error_fdata)
-#' image(x = s, y = t, z = r_gof2019$beta, col = viridisLite::viridis(20))
+#' plot(r_gof2021$X_fdata)
+#' plot(r_gof2021$error_fdata)
+#' image(x = s, y = t, z = r_gof2021$beta, col = viridisLite::viridis(20))
 #'
-#' # Concurrent model in García-Portugués et al. (2019)
-#' r_gof2019 <- r_gof2019_flmfr(n = 50, s = s, t = s, std_error = 0.35,
+#' # Concurrent model in García-Portugués et al. (2021)
+#' r_gof2021 <- r_gof2021_flmfr(n = 50, s = s, t = s, std_error = 0.35,
 #'                              concurrent = TRUE)
-#' plot(r_gof2019$X_fdata)
-#' plot(r_gof2019$error_fdata)
-#' plot(r_gof2019$beta)
+#' plot(r_gof2021$X_fdata)
+#' plot(r_gof2021$error_fdata)
+#' plot(r_gof2021$beta)
 #' @author Javier Álvarez-Liébana.
 #' @references
 #' Cardot, H. and Mas, A. (2013). Asymptotics of prediction in functional linear
 #' regression with functional outputs. \emph{Bernoulli}, 19(5B):2627--2651.
-#' \url{https://doi.org/10.3150/12-BEJ469}
+#' \doi{10.3150/12-BEJ469}
 #'
 #' Imaizumi, M. and Kato, K. (2018). PCA-based estimation for functional linear
 #' regression with functional responses. \emph{Journal of Multivariate
-#' Analysis}, 163:15--36. \url{https://doi.org/10.1016/j.jmva.2017.10.001}
+#' Analysis}, 163:15--36. \doi{10.1016/j.jmva.2017.10.001}
 #'
 #' García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-#' Gonzalez-Manteiga, W. (2019). A goodness-of-fit test
-#' linear model with functional response. \emph{arXiv:1909.07686}.
-#' \url{https://arxiv.org/abs/1909.07686}
+#' Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+#' linear model with functional response. \emph{Scandinavian Journal of
+#' Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 #' @name elem-flmfr
 
 
@@ -697,7 +697,7 @@ r_ik2018_flmfr <- function(n, s = seq(0, 1, l = 101), t = seq(0, 1, l = 101),
 
 #' @rdname elem-flmfr
 #' @export
-r_gof2019_flmfr <- function(n, s = seq(0, 1, len = 101),
+r_gof2021_flmfr <- function(n, s = seq(0, 1, len = 101),
                             t = seq(0, 1, len = 101), std_error = 0.35,
                             concurrent = FALSE) {
 
@@ -796,9 +796,9 @@ r_gof2019_flmfr <- function(n, s = seq(0, 1, len = 101),
 #' @author Javier Álvarez-Liébana.
 #' @references
 #' García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-#' González-Manteiga, W. (2019). A goodness-of-fit test for the functional
-#' linear model with functional response. \emph{arXiv:1909.07686}.
-#' \url{https://arxiv.org/abs/1909.07686}
+#' Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+#' linear model with functional response. \emph{Scandinavian Journal of
+#' Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 #' @export
 flm_term <- function(X_fdata, beta, t, int_rule = "trapezoid",
                      equispaced = NULL, concurrent = FALSE) {

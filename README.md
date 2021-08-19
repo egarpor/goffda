@@ -1,5 +1,4 @@
-goffda
-======
+# goffda
 
 [![License:
 GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -10,18 +9,16 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 
 <!-- <img src="" alt="goffda  hexlogo" align="right" width="200" style="padding: 0 15px; float: right;"/> -->
 
-Overview
---------
+## Overview
 
 Software companion for the paper “*A goodness-of-fit test for the
 functional linear model with functional response*” (García-Portugués,
-Álvarez-Liébana, Álvarez-Pérez and González-Manteiga, 2019). It
+Álvarez-Liébana, Álvarez-Pérez and González-Manteiga, 2021). It
 implements the proposed estimators and goodness-of-fit tests for the
 functional linear model with scalar response. It also allows to
 replicate the data application presented.
 
-Installation
-------------
+## Installation
 
 Get the released version from CRAN:
 
@@ -44,8 +41,7 @@ install_github("egarpor/goffda")
 library(goffda)
 ```
 
-Usage
------
+## Usage
 
 The following are some simple examples of the usage of the main function
 of the package, `flm_test`. More examples are available in `?flm_test`.
@@ -103,8 +99,7 @@ flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
     #> data:  Y_fdata ~ X_fdata
     #> statistic = 290.71, p = 4, q = 7, p-value < 2.2e-16
 
-AEMET temperatures data
------------------------
+## AEMET temperatures data
 
 An illustration of the test application in a real dataset.
 
@@ -149,7 +144,6 @@ legend("topleft", legend = c("1974-1993", "1994-2013"), col = 1:2, lwd = 2)
 <img src="README/README-aemet-1.png" style="display: block; margin: auto;" />
 
 ``` r
-
 # Test composite and simple hypothesis
 (gof <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp, B = 1e4,
                  verbose = FALSE, plot_dens = FALSE, plot_proc = FALSE))
@@ -178,27 +172,27 @@ filled.contour(x = aemet_temp_pred$argvals, y = aemet_temp_resp$argvals,
 
 <img src="README/README-aemet-2.png" style="display: block; margin: auto;" />
 
-References
-----------
+## References
 
 García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-González-Manteiga, W. (2019). A goodness-of-fit test for the functional
-linear model with functional response. *arXiv:1909.07686*.
-<a href="https://arxiv.org/abs/1909.07686" class="uri">https://arxiv.org/abs/1909.07686</a>
+González-Manteiga, W. (2021). A goodness-of-fit test for the functional
+linear model with functional response. *Scandinavian Journal of
+Statistics*, 48(2):502–528.
+[doi:10.1111/sjos.12486](https://doi.org/10.1111/sjos.12486)
 
 Cuesta-Albertos, J. A., García-Portugués, E., Febrero-Bande, M. and
 González-Manteiga, W. (2019). Goodness-of-fit tests for the functional
-linear model based on randomly projected empirical processes. *Annals of
-Statistics*, 47(1):439-467.
-<a href="https://doi.org/10.1214/18-AOS1693" class="uri">https://doi.org/10.1214/18-AOS1693</a>
+linear model based on randomly projected empirical processes. *The
+Annals of Statistics*, 47(1):439-467.
+[doi:10.1214/18-AOS1693](https://doi.org/10.1214/18-AOS1693)
 
 Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical
 Computing in Functional Data Analysis: The R Package fda.usc. *Journal
 of Statistical Software*, 51(4):1-28.
-<a href="http://www.jstatsoft.org/v51/i04/" class="uri">http://www.jstatsoft.org/v51/i04/</a>
+<https://www.jstatsoft.org/v51/i04/>
 
 García-Portugués, E., González-Manteiga, W. and Febrero-Bande, M.
 (2014). A goodness-of-fit test for the functional linear model with
 scalar response. *Journal of Computational and Graphical Statistics*,
 23(3):761-778.
-<a href="http://doi.org/10.1080/10618600.2013.812519" class="uri">http://doi.org/10.1080/10618600.2013.812519</a>
+[doi:10.1080/10618600.2013.812519](https://doi.org/10.1080/10618600.2013.812519)

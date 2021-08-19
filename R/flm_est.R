@@ -125,7 +125,7 @@
 #'   \item \code{"fpcr_l1s"}: FPCR, with FPC selected by lasso regression
 #'   on the associated multivariate linear model.
 #' }
-#' The last three methods are explained in García-Portugués et al. (2019).
+#' The last three methods are explained in García-Portugués et al. (2021).
 #'
 #' The \eqn{p} FPC of \code{X} and \eqn{q} FPC of \code{Y} are determined
 #' as follows:
@@ -273,9 +273,9 @@
 #' @author Eduardo García-Portugués and Javier Álvarez-Liébana.
 #' @references
 #' García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-#' González-Manteiga, W. (2019). A goodness-of-fit test for the functional
-#' linear model with functional response. \emph{arXiv:1909.07686}.
-#' \url{https://arxiv.org/abs/1909.07686}
+#' Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+#' linear model with functional response. \emph{Scandinavian Journal of
+#' Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 #'
 #' Ramsay, J. and Silverman, B. W. (2005). \emph{Functional Data Analysis}.
 #' Springer-Verlag, New York.
