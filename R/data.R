@@ -137,8 +137,8 @@
 #' In leap years, the daily-average temperature is computed as the average of
 #' February 28th and 29th.
 #' @source The data was retrieved from the FTP of the
-#' \href{https://www.aemet.es/}{Meteorological State Agency of Spain (AEMET)}
-#' in 2014 using a processing script by the authors of the
+#' \href{http://www.aemet.es/es/portada/}{Meteorological State Agency of Spain
+#' (AEMET)} in 2014 using a processing script by the authors of the
 #' \code{\link[fda.usc]{fda.usc-package}}.
 #' @author
 #' Original data processing scripts by Manuel Febrero-Bande and Manuel Oviedo

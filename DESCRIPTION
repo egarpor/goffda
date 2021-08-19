@@ -20,7 +20,7 @@ Description: Implementation of several goodness-of-fit tests for functional
     functional/scalar response and functional/scalar predictor. The package
     allows for the replication of the data applications considered in
     García-Portugués, Álvarez-Liébana, Álvarez-Pérez and González-Manteiga
-    (2021) <doi:doi:10.1111/sjos.12486>.
+    (2021) <doi:10.1111/sjos.12486>.
 License: GPL-3
 LazyData: true
 Depends:
