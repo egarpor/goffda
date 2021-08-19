@@ -24,11 +24,11 @@ A list with the following entries:
 }
 \source{
 The dataset comes from the companion data to Benatia et al. (2017), which
-was retrieved from the \href{http://davidbenatia.com/research}{first
-author's website}. The source of the electricity consumption data is the
-\href{http://www.ieso.ca}{System operator's website}. The source of the
-preprocessed temperature values is the
-\href{http://climat.meteo.gc.ca/}{Environment Canada's website}.
+was retrieved from the \href{https://davidbenatia.wordpress.com/research/}{
+first author's website}. The source of the electricity consumption data is
+the \href{https://www.ieso.ca/}{System operator's website}. The source
+of the preprocessed temperature values is the
+\href{https://climat.meteo.gc.ca/}{Environment Canada's website}.
 }
 \usage{
 ontario
@@ -100,7 +100,7 @@ filled.contour(x = ontario$temp$argvals, y = ontario$elec$argvals,
 \references{
 Benatia, D., Carrasco, M. and Florens, J. P. (2017) Functional linear
 regression with functional response. \emph{Journal of Econometrics},
-201(2):269--291. \url{https://doi.org/10.1016/j.jeconom.2017.08.008}
+201(2):269--291. \doi{10.1016/j.jeconom.2017.08.008}
 }
 \author{
 Data gathered and processed by David Benatia, Marine Carrasco, and

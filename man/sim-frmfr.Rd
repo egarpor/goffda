@@ -19,7 +19,7 @@ nl_dev(X_fdata, t = seq(0, 1, l = 101), nonlinear = NULL,
 
 \item{scenario}{an index from \code{1} to \code{3} (default) denoting
 one of the scenarios (S1, S2 or S3) simulated in
-García-Portugués et al. (2019) (see details below). If
+García-Portugués et al. (2021) (see details below). If
 \code{scenario = NULL}, \code{X_fdata}, \code{error_fdata}, and \code{beta}
 have to be provided. Otherwise, \code{X_fdata}, \code{error_fdata}, and
 \code{beta} will be ignored.}
@@ -69,7 +69,7 @@ Defaults to \code{FALSE}.}
 
 \item{...}{further parameters passed to
 \code{\link[goffda:elem-flmfr]{r_cm2013_flmfr}},
-\code{\link[goffda:elem-flmfr]{r_gof2019_flmfr}} and\cr 
+\code{\link[goffda:elem-flmfr]{r_gof2021_flmfr}} and\cr 
 \code{\link[goffda:elem-flmfr]{r_ik2018_flmfr}}, depending on the
 chosen \code{scenario}.}
 
@@ -104,7 +104,7 @@ square-integrable functions in \eqn{[a, b]}, \eqn{L^2([a, b])},
 \eqn{\varepsilon}{\epsilon} is a random variable in \eqn{L^2([c, d])},
 and \eqn{\Delta(X)}{\Delta(X)} is a nonlinear term.
 
-In particular, the scenarios considered in García-Portugués et al. (2019)
+In particular, the scenarios considered in García-Portugués et al. (2021)
 can be easily simulated.
 }
 \details{
@@ -112,9 +112,9 @@ can be easily simulated.
   \item{\code{r_frm_fr} samples the above regression model,
   where the nonlinear term \eqn{\Delta(X)} is computed by \code{nl_dev}.
   Functional covariates, errors, and \eqn{\beta} are generated
-  automatically from the scenarios in García-Portugués et al. (2019) when
+  automatically from the scenarios in García-Portugués et al. (2021) when
   \code{scenario != NULL} (see the documentation of
-  \code{\link{r_gof2019_flmfr}}). If \code{scenario = NULL},
+  \code{\link{r_gof2021_flmfr}}). If \code{scenario = NULL},
   covariates, errors and \eqn{\beta} must be provided.
 
   When \code{concurrent = TRUE}, the concurrent FRMFR
@@ -183,7 +183,7 @@ s <- c(seq(0, 0.5, l = 50), seq(0.51, 1, l = 101))
 t <- seq(2, 4, len = 151)
 X_fdata <- r_ou(n = 100, t = s, alpha = 2, sigma = 4, x0 = 1:100)
 error_fdata <- r_ou(n = 100, t = t, alpha = 1, sigma = 1, x0 = 1:100)
-beta <- r_gof2019_flmfr(n = 100, s = s, t = t)$beta
+beta <- r_gof2021_flmfr(n = 100, s = s, t = t)$beta
 samp_Xeps <- r_frm_fr(scenario = NULL, X_fdata = X_fdata,
                       error_fdata = error_fdata, beta = beta,
                       nonlinear = "exp", int_rule = "trapezoid")
@@ -197,9 +197,9 @@ par(old_par)
 }
 \references{
 García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and
-Gonzalez-Manteiga, W. (2019). A goodness-of-fit test
-linear model with functional response. \emph{arXiv:1909.07686}.
-\url{https://arxiv.org/abs/1909.07686}
+Gonzalez-Manteiga, W. (2021). A goodness-of-fit test for the functional
+linear model with functional response. \emph{Scandinavian Journal of
+Statistics}, 48(2):502--528. \doi{10.1111/sjos.12486}
 }
 \author{
 Javier Álvarez-Liébana.
