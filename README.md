@@ -190,7 +190,7 @@ Annals of Statistics*, 47(1):439-467.
 Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical
 Computing in Functional Data Analysis: The R Package fda.usc. *Journal
 of Statistical Software*, 51(4):1-28.
-<https://www.jstatsoft.org/v51/i04/>
+[doi:10.18637/jss.v051.i04](https://doi.org/10.18637/jss.v051.i04)
 
 García-Portugués, E., González-Manteiga, W. and Febrero-Bande, M.
 (2014). A goodness-of-fit test for the functional linear model with

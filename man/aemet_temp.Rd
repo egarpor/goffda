@@ -133,7 +133,7 @@ abline(h = 1 / 365, col = 2)
 \references{
 Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical Computing
 in Functional Data Analysis: The R Package fda.usc. \emph{Journal of
-Statistical Software}, 51(4):1--28. \url{https://www.jstatsoft.org/v51/i04/}
+Statistical Software}, 51(4):1--28. \doi{10.18637/jss.v051.i04}
 }
 \author{
 Original data processing scripts by Manuel Febrero-Bande and Manuel Oviedo
