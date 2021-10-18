@@ -292,7 +292,7 @@
 #' @references
 #' Friedman, J., Hastie, T. and Tibshirani, R. (2010). Regularization paths for
 #' generalized linear models via coordinate descent. \emph{Journal of
-#' Statistical Software}, 33(1):1--22. \url{https://www.jstatsoft.org/v33/i01/}
+#' Statistical Software}, 33(1):1--22. \doi{10.18637/jss.v033.i01}
 #' @export
 cv_glmnet <- function(x, y, alpha = c("lasso", "ridge")[1], lambda = NULL,
                       intercept = TRUE, thresh = 1e-10, cv_1se = TRUE,

@@ -150,6 +150,6 @@ García-Portugués, E., Álvarez-Liébana, J., Álvarez-Pérez, G. and González
 
 Cuesta-Albertos, J. A., García-Portugués, E., Febrero-Bande, M. and González-Manteiga, W. (2019). Goodness-of-fit tests for the functional linear model based on randomly projected empirical processes. *The Annals of Statistics*, 47(1):439-467. [doi:10.1214/18-AOS1693](https://doi.org/10.1214/18-AOS1693)
 
-Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical Computing in Functional Data Analysis: The R Package fda.usc. *Journal of Statistical Software*, 51(4):1-28. <https://www.jstatsoft.org/v51/i04/>
+Febrero-Bande, M. and Oviedo de la Fuente, M. (2012). Statistical Computing in Functional Data Analysis: The R Package fda.usc. *Journal of Statistical Software*, 51(4):1-28. [doi:10.18637/jss.v051.i04](https://doi.org/10.18637/jss.v051.i04)
 
 García-Portugués, E., González-Manteiga, W. and Febrero-Bande, M. (2014). A goodness-of-fit test for the functional linear model with scalar response. *Journal of Computational and Graphical Statistics*, 23(3):761-778. [doi:10.1080/10618600.2013.812519](https://doi.org/10.1080/10618600.2013.812519)
