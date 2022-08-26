@@ -754,6 +754,7 @@ r_gof2021_flmfr <- function(n, s = seq(0, 1, len = 101),
 #' the same grid as \code{error_fdata}, with the same length as
 #' \code{length(X_fdata$argvals)}.
 #' @inheritParams quadrature
+#' @param t grid points where responses are valued.
 #' @inheritParams elem-flmfr
 #' @return Functional linear model term as the integral (in \code{s}) between
 #' \code{X_fdata} and \code{beta}, as an \code{\link[fda.usc]{fdata}} object of

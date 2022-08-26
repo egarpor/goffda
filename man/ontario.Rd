@@ -24,7 +24,7 @@ A list with the following entries:
 }
 \source{
 The dataset comes from the companion data to Benatia et al. (2017), which
-was retrieved from the \href{https://davidbenatia.wordpress.com/research/}{
+was retrieved from the \href{https://www.davidbenatia.com/publication/}{
 first author's website}. The source of the electricity consumption data is
 the \href{https://www.ieso.ca/}{System operator's website}. The source
 of the preprocessed temperature values is the

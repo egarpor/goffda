@@ -19,3 +19,7 @@
 * Support forthcoming `Rcpp`'s STRICT_R_HEADERS.
 * Update bibliographical details for main reference.
 * Rename `r_gof2019_flmfr` to `r_gof2021_flmfr`.
+
+# goffda 0.1.1
+
+* Fix in HTML version of manual.
