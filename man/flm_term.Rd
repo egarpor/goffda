@@ -17,7 +17,7 @@ for each grid point \eqn{s} in  \eqn{[a, b]} and \eqn{t} in \eqn{[c, d]}. If
 the same grid as \code{error_fdata}, with the same length as
 \code{length(X_fdata$argvals)}.}
 
-\item{t}{vectors with grid points where functions are valued.}
+\item{t}{grid points where responses are valued.}
 
 \item{int_rule}{quadrature rule for approximating the definite
 unidimensional integral: trapezoidal rule (\code{int_rule = "trapezoid"})
