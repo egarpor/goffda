@@ -65,7 +65,7 @@ Defaults to \code{"trapezoid"}.}
 \value{
 A list with the following entries:
 \item{Beta_hat}{estimated \eqn{\beta}, a matrix with values
-\eqn{\hat\beta (s, t)} evaluated at the grid points for \code{X}
+\eqn{\hat\beta(s, t)} evaluated at the grid points for \code{X}
 and \code{Y}. Its size is \code{c(length(X$argvals), length(Y$argvals))}.}
 \item{Beta_hat_scores}{the matrix of coefficients of \code{Beta_hat}
 (resulting from projecting it into the tensor basis of \code{X_fpc} and

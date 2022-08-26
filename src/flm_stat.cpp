@@ -17,13 +17,12 @@ using namespace Rcpp;
 //' expansion, such as Functional Principal Components (FPC).
 //'
 //' The PCvM statistic is defined as
-//' \deqn{\mathrm{PCvM}_{n,p,q} =
-//' c \cdot \mathrm{tr}(\hat\mathbf{E}_q' \mathbf{A}_\bullet \hat\mathbf{E}_q)}{
-//' PCvM_{n, p, q} = c * tr(\hat E_q' A_\bullet \hat E_q)
-//' }
+//' \deqn{\mathrm{PCvM}_{n,p,q} = c \cdot \mathrm{tr}(\hat{\mathbf{E}}_q'
+//' \mathbf{A}_\bullet \hat{\mathbf{E}}_q)}{PCvM_{n, p, q} =
+//' c * tr(\hat E_q' A_\bullet \hat E_q)}
 //' where
 //' \deqn{c = 2 \pi^{(p + q) / 2 - 1} / (q \Gamma(p / 2) \Gamma(q / 2) n^2),}
-//' \eqn{\hat\mathbf{E}_q}{\hat E_q} is the \eqn{n \times q}{n x q}
+//' \eqn{\hat{\mathbf{E}}_q}{\hat E_q} is the \eqn{n \times q}{n x q}
 //' matrix of multivariate residuals, and
 //' \eqn{\mathbf{A}_\bullet}{A_\bullet} is a \eqn{n \times n}{n x n}
 //' matrix whose \eqn{ij}-th element is
