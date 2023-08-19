@@ -13,7 +13,7 @@ fpc_coefs(X_fdata, X_fpc, ind_X_fpc = 1:3, int_rule = "trapezoid")
 beta_fpc_coefs(beta, X_fpc, Y_fpc, ind_X_fpc = 1:3, ind_Y_fpc = 1:3,
   int_rule = "trapezoid")
 
-fpc_to_fdata(coefs, X_fpc, ind_coefs = seqq_len(ncol(coefs)))
+fpc_to_fdata(coefs, X_fpc, ind_coefs = seq_len(ncol(coefs)))
 
 fpc_to_beta(beta_coefs, X_fpc, Y_fpc,
   ind_coefs_X = seq_len(nrow(beta_coefs)),

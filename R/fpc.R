@@ -410,7 +410,7 @@ beta_fpc_coefs <- function(beta, X_fpc, Y_fpc, ind_X_fpc = 1:3, ind_Y_fpc = 1:3,
 
 #' @rdname fpc_utils
 #' @export
-fpc_to_fdata <- function(coefs, X_fpc, ind_coefs = seqq_len(ncol(coefs))) {
+fpc_to_fdata <- function(coefs, X_fpc, ind_coefs = seq_len(ncol(coefs))) {
 
   # coefs as matrix
   if (!is.matrix(coefs)) {
