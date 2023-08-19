@@ -119,7 +119,7 @@ integral1D <- function(fx, t, int_rule = "trapezoid", equispaced = FALSE,
   }
 
   # Check if NA
-  if (any(is.na(fx)) & verbose) {
+  if (any(is.na(fx)) && verbose) {
 
     warning("NA values have been found")
 
@@ -159,7 +159,7 @@ integral2D <- function(fxy, s, t, int_rule = "trapezoid", equispaced_x = FALSE,
 
   # Only trapezoidal rule has been implemented for bidimensional functions with
   # non equispaced grids
-  if (int_rule == "Simpson" & (equispaced_x + equispaced_y) != 2) {
+  if (int_rule == "Simpson" && (equispaced_x + equispaced_y) != 2) {
 
     stop(paste("Only trapezoidal rule (int_rule = \"trapezoid\") is allowed",
                 "for 2D functions and non equispaced grids"))
@@ -170,7 +170,7 @@ integral2D <- function(fxy, s, t, int_rule = "trapezoid", equispaced_x = FALSE,
   lx <- length(s)
   ly <- length(t)
   dim_fxy <- dim(fxy)
-  if (dim_fxy[1] != lx | dim_fxy[2] != ly) {
+  if (dim_fxy[1] != lx || dim_fxy[2] != ly) {
 
     stop(paste("The number of evaluations of the function must",
                "be the same as the number of grid points"))
@@ -231,12 +231,12 @@ w_integral1D <- function(t, int_rule = "trapezoid", equispaced = FALSE,
     return(1)
 
   }
-  if (int_rule == "trapezoid" & lx < 2) {
+  if (int_rule == "trapezoid" && lx < 2) {
 
     stop(paste("Trapezoidal rule requires at least 2 grid points,",
                "but the length of t is", lx))
 
-  } else if (int_rule == "Simpson" & lx < 7) {
+  } else if (int_rule == "Simpson" && lx < 7) {
 
     stop(paste("The extended Simpson's rule requires at least 7 grid points,",
                "but the length of t is", lx))
@@ -244,7 +244,7 @@ w_integral1D <- function(t, int_rule = "trapezoid", equispaced = FALSE,
   }
 
   # Simpson's rule requires equispaced grid points
-  if (!equispaced & int_rule == "Simpson") {
+  if (!equispaced && int_rule == "Simpson") {
 
     t <- seq(t[1], t[lx], l = lx) # We consider an equispaced grid
     lx <- length(t)

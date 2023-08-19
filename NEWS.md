@@ -23,3 +23,8 @@
 # goffda 0.1.1
 
 * Fix in HTML version of manual.
+
+# goffda 0.1.2
+
+* Drop C++11 requirement to adhere to new CRAN policies.
+* Drop `personList()` and `citEntry()`.

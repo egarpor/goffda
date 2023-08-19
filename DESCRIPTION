@@ -1,8 +1,8 @@
 Package: goffda
 Type: Package
 Title: Goodness-of-Fit Tests for Functional Data
-Version: 0.1.1
-Date: 2022-08-26
+Version: 0.1.2
+Date: 2023-08-19
 Authors@R: c(
     person(given = "Eduardo", family = "García-Portugués",
            role = c("aut", "cre"), email = "edgarcia@est-econ.uc3m.es",
@@ -39,5 +39,5 @@ LinkingTo: Rcpp, RcppArmadillo
 URL: https://github.com/egarpor/goffda
 BugReports: https://github.com/egarpor/goffda
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.2.3
 Roxygen: list(old_usage = TRUE)

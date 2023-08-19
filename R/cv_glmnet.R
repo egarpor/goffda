@@ -397,7 +397,7 @@ cv_glmnet <- function(x, y, alpha = c("lasso", "ridge")[1], lambda = NULL,
     # Check if it is required a second call because the minimum is found at
     # one extreme of the sequence (quantified as either the 100 * cv_tol_second
     # largest or smallest values)
-    if (cv_second & (prc_lambda_min <= cv_tol_second |
+    if (cv_second && (prc_lambda_min <= cv_tol_second ||
                      prc_lambda_min >= (1 - cv_tol_second))) {
 
       # Save for message()
@@ -461,10 +461,14 @@ cv_glmnet <- function(x, y, alpha = c("lasso", "ridge")[1], lambda = NULL,
         par(mfrow = c(1, 2))
         plot(cv_old, axes = FALSE, xlab = "log10(lambda)")
         labs <- pretty(log10(cv_old$lambda))
-        axis(1, at = log(10^labs), labels = labs); axis(2); box()
+        axis(1, at = log(10^labs), labels = labs)
+        axis(2)
+        box()
         plot(cv, axes = FALSE, xlab = "log10(lambda)")
         labs <- pretty(log10(cv$lambda))
-        axis(1, at = log(10^labs), labels = labs); axis(2); box()
+        axis(1, at = log(10^labs), labels = labs)
+        axis(2)
+        box()
 
       }
 
@@ -482,7 +486,9 @@ cv_glmnet <- function(x, y, alpha = c("lasso", "ridge")[1], lambda = NULL,
         par(mfrow = c(1, 1))
         plot(cv, axes = FALSE, xlab = "log10(lambda)")
         labs <- pretty(log10(cv$lambda))
-        axis(1, at = log(10^labs), labels = labs); axis(2); box()
+        axis(1, at = log(10^labs), labels = labs)
+        axis(2)
+        box()
 
       }
 

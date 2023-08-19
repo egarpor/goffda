@@ -69,7 +69,7 @@ Defaults to \code{FALSE}.}
 
 \item{...}{further parameters passed to
 \code{\link[goffda:elem-flmfr]{r_cm2013_flmfr}},
-\code{\link[goffda:elem-flmfr]{r_gof2021_flmfr}} and\cr 
+\code{\link[goffda:elem-flmfr]{r_gof2021_flmfr}} and\cr
 \code{\link[goffda:elem-flmfr]{r_ik2018_flmfr}}, depending on the
 chosen \code{scenario}.}
 
