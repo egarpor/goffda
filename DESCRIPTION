@@ -2,7 +2,7 @@ Package: goffda
 Type: Package
 Title: Goodness-of-Fit Tests for Functional Data
 Version: 0.1.2
-Date: 2023-08-19
+Date: 2023-10-14
 Authors@R: c(
     person(given = "Eduardo", family = "García-Portugués",
            role = c("aut", "cre"), email = "edgarcia@est-econ.uc3m.es",
