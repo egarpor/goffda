@@ -13,10 +13,11 @@ fpc_coefs(X_fdata, X_fpc, ind_X_fpc = 1:3, int_rule = "trapezoid")
 beta_fpc_coefs(beta, X_fpc, Y_fpc, ind_X_fpc = 1:3, ind_Y_fpc = 1:3,
   int_rule = "trapezoid")
 
-fpc_to_fdata(coefs, X_fpc, ind_coefs = 1:ncol(coefs))
+fpc_to_fdata(coefs, X_fpc, ind_coefs = seq_len(ncol(coefs)))
 
-fpc_to_beta(beta_coefs, X_fpc, Y_fpc, ind_coefs_X = 1:nrow(beta_coefs),
-  ind_coefs_Y = 1:ncol(beta_coefs))
+fpc_to_beta(beta_coefs, X_fpc, Y_fpc,
+  ind_coefs_X = seq_len(nrow(beta_coefs)),
+  ind_coefs_Y = seq_len(ncol(beta_coefs)))
 }
 \arguments{
 \item{X_fdata}{sample of functional data as an

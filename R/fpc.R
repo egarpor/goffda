@@ -377,7 +377,7 @@ beta_fpc_coefs <- function(beta, X_fpc, Y_fpc, ind_X_fpc = 1:3, ind_Y_fpc = 1:3,
   # Check the dimension of beta with the argvals of X_fdata and Y_fdata
   s <- X_fpc[["rotation"]][["argvals"]]
   t <- Y_fpc[["rotation"]][["argvals"]]
-  if (nrow(beta) != length(s) | ncol(beta) != length(t)) {
+  if (nrow(beta) != length(s) || ncol(beta) != length(t)) {
 
     stop(paste("The dimensions of beta do not coincide with the argvals",
                "of X_fpc and Y_fpc"))
@@ -410,7 +410,7 @@ beta_fpc_coefs <- function(beta, X_fpc, Y_fpc, ind_X_fpc = 1:3, ind_Y_fpc = 1:3,
 
 #' @rdname fpc_utils
 #' @export
-fpc_to_fdata <- function(coefs, X_fpc, ind_coefs = 1:ncol(coefs)) {
+fpc_to_fdata <- function(coefs, X_fpc, ind_coefs = seq_len(ncol(coefs))) {
 
   # coefs as matrix
   if (!is.matrix(coefs)) {
@@ -444,8 +444,8 @@ fpc_to_fdata <- function(coefs, X_fpc, ind_coefs = 1:ncol(coefs)) {
 #' @rdname fpc_utils
 #' @export
 fpc_to_beta <- function(beta_coefs, X_fpc, Y_fpc,
-                        ind_coefs_X = 1:nrow(beta_coefs),
-                        ind_coefs_Y = 1:ncol(beta_coefs)) {
+                        ind_coefs_X = seq_len(nrow(beta_coefs)),
+                        ind_coefs_Y = seq_len(ncol(beta_coefs))) {
 
   # Check beta_coefs
   n_fpc_X <- nrow(X_fpc[["rotation"]][["data"]])
@@ -458,7 +458,7 @@ fpc_to_beta <- function(beta_coefs, X_fpc, Y_fpc,
 
   } else {
 
-    if (nrow(beta_coefs) != length(ind_coefs_X) |
+    if (nrow(beta_coefs) != length(ind_coefs_X) ||
         ncol(beta_coefs) != length(ind_coefs_Y)) {
 
       stop(paste("The dimensions of beta_coefs do not match with",

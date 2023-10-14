@@ -320,13 +320,13 @@ flm_est <- function(X, Y, est_method = "fpcr_l1s",
   }
 
   # Check thresholds (threshold = 1 is OK)
-  if (!is.numeric(thre_p) | (thre_p <= 0 | thre_p > 1)) {
+  if (!is.numeric(thre_p) || (thre_p <= 0 || thre_p > 1)) {
 
     stop(paste("Parameter thre_p must be a real numeric parameter greater",
                "than 0 and less than 1. Value of 1 is allowed."))
 
   }
-  if (!is.numeric(thre_q) | (thre_q <= 0 | thre_q > 1)) {
+  if (!is.numeric(thre_q) || (thre_q <= 0 || thre_q > 1)) {
 
     stop(paste("Parameter thre_q must be a real numeric parameter greater",
                "than 0 and less than 1. Value of 1 is allowed."))
@@ -521,7 +521,7 @@ flm_est <- function(X, Y, est_method = "fpcr_l1s",
                       intercept = FALSE, ...)
       lambda <- cv[["lambda"]]
 
-    } else{
+    } else {
 
       cv <- NULL
 
