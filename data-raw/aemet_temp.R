@@ -1,8 +1,8 @@
 
 library(fda.usc)
 
-# Load the results from running aemet.local.R used for creating fda.usc's 
-# aemet. The script reads the data downloaded from AEMET's FTP in 2014. 
+# Load the results from running aemet.local.R used for creating fda.usc's
+# aemet. The script reads the data downloaded from AEMET's FTP in 2014.
 # Unfortunately, the data retrieval approach does not work anymore due to a
 # change in AEMET's data access API, so one must have locally the old raw files
 # to reconstruct aemet.raw.RData
@@ -34,7 +34,7 @@ aemet_temp$df$altitude <- NULL
 
 # Add metainfo
 aemet_temp$temp$rangeval <- c(0, 365)
-aemet_temp$temp$names <- list(main = "Temperature", xlab = "Day", 
+aemet_temp$temp$names <- list(main = "Temperature", xlab = "Day",
                               ylab = "Temperature (ºC)")
 
 # Save dataset

@@ -5,8 +5,8 @@ GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org
 [![R build
 status](https://github.com/egarpor/goffda/workflows/R-CMD-check/badge.svg)](https://github.com/egarpor/goffda/actions)
 [![](https://www.r-pkg.org/badges/version/goffda?color=green)](https://cran.r-project.org/package=goffda)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/goffda?color=green)](https://cran.r-project.org/package=goffda)
-[![](http://cranlogs.r-pkg.org/badges/last-month/goffda?color=green)](https://cran.r-project.org/package=goffda)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/goffda)](https://cran.r-project.org/package=goffda)
+[![](http://cranlogs.r-pkg.org/badges/last-month/goffda)](https://cran.r-project.org/package=goffda)
 
 <!-- <img src="" alt="goffda  hexlogo" align="right" width="200" style="padding: 0 15px; float: right;"/> -->
 
@@ -145,6 +145,7 @@ legend("topleft", legend = c("1974-1993", "1994-2013"), col = 1:2, lwd = 2)
 <img src="README/README-aemet-1.png" style="display: block; margin: auto;" />
 
 ``` r
+
 # Test composite and simple hypothesis
 (gof <- flm_test(X = aemet_temp_pred, Y = aemet_temp_resp, B = 1e4,
                  verbose = FALSE, plot_dens = FALSE, plot_proc = FALSE))

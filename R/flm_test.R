@@ -317,7 +317,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   ## Preprocessing
 
   # Detect non-implemented bootstrap resampling
-  if (boot_scores & (est_method == "fpcr_l1")) {
+  if (boot_scores && (est_method == "fpcr_l1")) {
 
     stop(paste("Bootstrap resampling of the residuals FPC coefficients is",
                "not implemented for est_method = \"fpcr_l1\""))
@@ -495,7 +495,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
 
       if (fda.usc::is.fdata(beta0)) {
 
-        if (scalar_X | scalar_Y) {
+        if (scalar_X || scalar_Y) {
 
           l_beta0 <- length(beta0)
           if (l_beta0 != 1) {
@@ -556,7 +556,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
     }
 
     # Check adequate dimensions
-    if (length(X$argvals) != nrow(beta0) |
+    if (length(X$argvals) != nrow(beta0) ||
         length(Y$argvals) != ncol(beta0)) {
 
       stop("beta0 must be a matrix of size ", length(X$argvals), " x ",
@@ -742,7 +742,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
           # (instead of p_hat)
           fit_flm_star <- flm_est(X = X, Y = Y_star, est_method = est_method,
                                   p = p_thre, q = q_thre, lambda = lambda,
-                                  X_fpc = fit_flm[["X_fpc"]],Y_fpc = NULL,
+                                  X_fpc = fit_flm[["X_fpc"]], Y_fpc = NULL,
                                   centered = TRUE, int_rule = int_rule,
                                   cv_verbose = FALSE, ...)
 
@@ -886,7 +886,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
       Rn_processes <- c(
         Rn(X_scores = X_scores, E_hat_scores = E_hat_scores,
            ind_X_fpc = ind_X_fpc, ind_Y_fpc = ind_Y_fpc),
-        lapply(1:dim(E_star_hat_scores)[3], function(i) {
+        lapply(seq_len(dim(E_star_hat_scores)[3]), function(i) {
           Rn(X_scores = X_scores,
              E_hat_scores = as.matrix(E_star_hat_scores[, , i]),
              ind_X_fpc = ind_X_fpc, ind_Y_fpc = ind_Y_fpc)})
@@ -905,7 +905,7 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
       rug(knots(Rn_processes[[1]]))
 
       # Add bootstrap processes
-      out <- sapply(1:dim(E_star_hat_scores)[3], function(i) {
+      sapply(seq_len(dim(E_star_hat_scores)[3]), function(i) {
         plot(Rn_processes[[i + 1]], add = TRUE,
              col = gray(0.75, alpha = 0.75), pch = NA)
       })

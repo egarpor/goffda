@@ -56,7 +56,7 @@
 #' Defaults to \code{FALSE}.
 #' @param ... further parameters passed to
 #' \code{\link[goffda:elem-flmfr]{r_cm2013_flmfr}},
-#' \code{\link[goffda:elem-flmfr]{r_gof2021_flmfr}} and\cr 
+#' \code{\link[goffda:elem-flmfr]{r_gof2021_flmfr}} and\cr
 #' \code{\link[goffda:elem-flmfr]{r_ik2018_flmfr}}, depending on the
 #' chosen \code{scenario}.
 #' @return A list with the following elements:
@@ -182,7 +182,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
 
     # If scenario is not NULL, X_fdata = NULL, error_fdata = NULL and
     # beta  = NULL are forced
-    if (verbose & (!is.null(X_fdata) | !is.null(error_fdata) |
+    if (verbose && (!is.null(X_fdata) || !is.null(error_fdata) ||
                    !is.null(beta))) {
 
       message("Scenario encoded as scenario = ", scenario,
@@ -202,12 +202,12 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
     }
 
     # Check if s and t are intervals
-    if (!is.vector(s) | length(s) < 1) {
+    if (!is.vector(s) || length(s) < 1) {
 
       stop("s must be a vector with length greater than zero")
 
     }
-    if (!is.vector(t) | length(t) < 1) {
+    if (!is.vector(t) || length(t) < 1) {
 
       stop("t must be a vector with length greater than zero")
 
@@ -216,7 +216,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
   } else { # If scenario = NULL, X_fdata, error_fdata and beta are required
 
     # Check if functional variables are properly provided
-    if (!fda.usc::is.fdata(X_fdata) | !fda.usc::is.fdata(error_fdata)) {
+    if (!fda.usc::is.fdata(X_fdata) || !fda.usc::is.fdata(error_fdata)) {
 
       stop(paste("scenario = NULL: \"fdata\" objects must be provided",
                  "as X_fdata and error_fdata, and beta must be a matrix"))
@@ -247,7 +247,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
       }
 
       # Check if beta is a vector with properly length
-      if (!is.vector(beta) |
+      if (!is.vector(beta) ||
           length(beta) != length(t)) {
 
         stop(paste("If concurrent model is generated, beta must be a vector",
@@ -258,8 +258,8 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
     } else {
 
       # Check if beta has properly dimensions
-      if (!(nrow(beta) == length(s) &
-            ncol(beta) == length(t) & is.matrix(beta))) {
+      if (!(nrow(beta) == length(s) &&
+            ncol(beta) == length(t) && is.matrix(beta))) {
 
         stop(paste("scenario = NULL: beta must be a matrix whose",
                    "dimensions are c(length(X_fdata$argvals),",
@@ -331,7 +331,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
 
   # Sampling deviations from the linearity
   # Check for nonlinear term
-  if (!is.null(nonlinear) & !is.character(nonlinear)) {
+  if (!is.null(nonlinear) && !is.character(nonlinear)) {
 
     if (!fda.usc::is.fdata(nonlinear)) {
 
@@ -341,7 +341,7 @@ r_frm_fr <- function(n, scenario = 3, X_fdata = NULL, error_fdata = NULL,
     } else {
 
       # Check if dimensions match
-      if (nrow(nonlinear[["data"]]) != n |
+      if (nrow(nonlinear[["data"]]) != n ||
                ncol(nonlinear[["data"]]) != length(t)) {
 
         stop(paste("If nonlinear is not NULL neither \"exp\", \"quadratic\"",
@@ -397,7 +397,7 @@ nl_dev <- function(X_fdata, t = seq(0, 1, l = 101), nonlinear = NULL,
   }
 
   # Check grid points
-  if (!is.vector(t) | length(t) < 1) {
+  if (!is.vector(t) || length(t) < 1) {
 
     stop("Grid points in t must be a vector of length greater than zero")
 
@@ -425,12 +425,12 @@ nl_dev <- function(X_fdata, t = seq(0, 1, l = 101), nonlinear = NULL,
 
     # If lengths of intervals is not the same, just rescaling is not possible
     # An interpolation is required
-    if (nonlinear != "sin" & (length(X_fdata[["argvals"]]) != length(t))) {
+    if (nonlinear != "sin" && (length(X_fdata[["argvals"]]) != length(t))) {
 
       X_fdata_int <- fda.usc::fdata(mdata =
                                     matrix(0, nrow = nrow(X_fdata[["data"]]),
                                            ncol = length(t)), argvals = t)
-      for (i in 1:nrow(X_fdata[["data"]])) {
+      for (i in seq_len(nrow(X_fdata[["data"]]))) {
 
         X_fdata_int[["data"]][i, ] <- spline(x = X_fdata[["argvals"]],
                                              y = X_fdata[["data"]][i, ],
@@ -832,7 +832,7 @@ flm_term <- function(X_fdata, beta, t, int_rule = "trapezoid",
     beta <- as.vector(beta)
 
     # Check that dimensions of beta match lengths of s and t
-    if ((length(s) != length(t)) | (length(t) != length(beta))) {
+    if ((length(s) != length(t)) || (length(t) != length(beta))) {
 
       stop(paste("When concurrent model is considered, X_fdata and beta",
                  "must be valued in the same grid interval t"))

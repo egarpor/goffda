@@ -4,10 +4,11 @@ note <- paste("R package version", meta$Version)
 
 citHeader("To cite goffda in publications use:")
 
-citEntry(entry = "Manual",
+bibentry(
+  bibtype      = "Manual",
   title        = "{goffda}: Goodness-of-Fit Tests for Functional Data",
-  author       = personList(as.person("Eduardo Garc\\'ia-Portugu\\'es"),
-                   as.person("Javier \\'Alvarez-Li\\'ebana")),
+  author       = c(person(given = "Eduardo", family = "García-Portugués"),
+                   person(given = "Javier", family = "Álvarez-Liébana")),
   year         = year,
   note         = note,
   url          = "https://CRAN.R-project.org/package=goffda",
@@ -17,12 +18,13 @@ citEntry(entry = "Manual",
         paste0(note, "."), "https://CRAN.R-project.org/package=goffda")
 )
 
-citEntry(entry = "Article",
+bibentry(
+  bibtype      = "Article",
   title        = "A goodness-of-fit test for the functional linear model with functional response",
-  author       = personList(as.person("Eduardo Garc\\'ia-Portugu\\'es"),
-                   as.person("Javier \\'Alvarez-Li\\'ebana"),
-                   as.person("Gonzalo \\'Alvarez-P\\'erez"),
-                   as.person("Wenceslao Gonzalez-Manteiga")),
+  author       = c(person(given = "Eduardo", family = "García-Portugués"),
+                   person(given = "Javier", family = "Álvarez-Liébana"),
+                   person(given = "Gonzalo", family = "Álvarez-Pérez"),
+                   person(given = "Wenceslao", family = "González-Manteiga")),
   journal      = "Scandinavian Journal of Statistics",
   year         = "2021",
   volume       = "48",
