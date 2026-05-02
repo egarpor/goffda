@@ -6,8 +6,8 @@
 \usage{
 flm_test(X, Y, beta0 = NULL, B = 500, est_method = "fpcr", p = NULL,
   q = NULL, thre_p = 0.99, thre_q = 0.99, lambda = NULL,
-  boot_scores = TRUE, verbose = TRUE, plot_dens = TRUE,
-  plot_proc = TRUE, plot_max_procs = 100, plot_max_p = 2,
+  boot_scores = TRUE, verbose = TRUE, plot_dens = FALSE,
+  plot_proc = FALSE, plot_max_procs = 100, plot_max_p = 2,
   plot_max_q = 2, save_fit_flm = TRUE, save_boot_stats = TRUE,
   int_rule = "trapezoid", refit_lambda = FALSE, ...)
 }
@@ -58,14 +58,17 @@ improves the computational expediency notably. Defaults to \code{TRUE}.}
 \item{verbose}{flag to show information about the testing progress. Defaults
 to \code{TRUE}.}
 
-\item{plot_dens}{flag to indicate if a kernel density estimation of the
-bootstrap statistics shall be plotted. Defaults to \code{TRUE}.}
+\item{plot_dens}{\strong{Deprecated.} If \code{TRUE}, plot a kernel density
+estimation of the bootstrap statistics during the call. Defaults to
+\code{FALSE}; use \code{\link{plot.flm_test}} on the returned object
+instead. Triggers a deprecation warning.}
 
-\item{plot_proc}{whether to display a graphical tool to identify the
-degree of departure from the null hypothesis. If \code{TRUE} (default),
-the residual marked empirical process, projected in several FPC directions
-of \code{X} and \code{Y}, is shown, together with bootstrap analogues.
-The FPC directions are ones selected at the estimation stage.}
+\item{plot_proc}{\strong{Deprecated.} If \code{TRUE}, display a graphical
+tool to identify the degree of departure from the null hypothesis (the
+residual marked empirical process, projected in several FPC directions
+of \code{X} and \code{Y}, together with bootstrap analogues). Defaults
+to \code{FALSE}; use \code{\link{plot.flm_test}} on the returned object
+instead. Triggers a deprecation warning.}
 
 \item{plot_max_procs}{maximum number of bootstrapped processes to plot in
 the graphical tool. Set as the minimum of \code{plot_max_procs} and \code{B}.
@@ -93,7 +96,9 @@ Much more time consumig. Defaults to \code{FALSE}.}
 \code{cv_nlambda} or \code{cv_parallel}, among others.}
 }
 \value{
-An object of the \code{htest} class with the following elements:
+An object of class \code{c("flm_test", "htest")} (so the standard
+\code{print} method for \code{"htest"} continues to work) with the
+following elements:
 \item{statistic}{test statistic.}
 \item{p.value}{\eqn{p}-value of the test.}
 \item{boot_statistics}{the bootstrapped test statistics, a vector
@@ -108,6 +113,11 @@ considered in the test statistic. These are the lengths of the outputs
 \item{boot_lambda}{bootstrapped \eqn{lambda}.}
 \item{boot_p}{a list with the bootstrapped indexes of the FPC considered
 for \code{X}.}
+\item{boot_E_scores}{three-dimensional array of size
+\code{c(n, q, min(plot_max_procs, B))} with the residual FPC scores
+from the bootstrap iterations, used by \code{\link{plot.flm_test}} to
+draw the residual marked empirical processes. \code{NA} if
+\code{save_boot_stats = FALSE}.}
 \item{data.name}{name of the value of \code{data}.}
 }
 \description{
@@ -154,8 +164,9 @@ estimators, as the oversmoothed estimate of the regression model under the
 null hypothesis notably facilitates the calibration of the test (see
 García-Portugués et al., 2021).
 
-The graphical tool obtained with \code{plot_proc = TRUE} is based on
-an extension of the tool described in García-Portugués et al. (2014).
+The graphical tool obtained with \code{plot(test, type = "proc")} on the
+returned object is based on an extension of the tool described in
+García-Portugués et al. (2014).
 
 Repeated observations on \code{X} are internally removed, as otherwise they
 would cause \code{NaN}s in \code{Adot}. Missing values on \code{X} and

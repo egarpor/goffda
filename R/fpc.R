@@ -486,3 +486,187 @@ fpc_to_beta <- function(beta_coefs, X_fpc, Y_fpc,
   return(beta)
 
 }
+
+
+#' @title S3 methods for the \code{"fpc"} class
+#'
+#' @description \code{print}, \code{summary}, \code{plot}, and \code{predict}
+#' methods for objects of class \code{"fpc"} returned by \code{\link{fpc}}.
+#'
+#' @param x,object an \code{"fpc"} object as returned by \code{\link{fpc}}.
+#' @param ind indexes of the eigenfunctions to be plotted. Defaults to
+#' the first three components.
+#' @param newdata an \code{\link[fda.usc]{fdata}} object whose curves are
+#' to be projected onto the eigenfunctions stored in \code{object}. Its
+#' \code{argvals} must coincide with those of \code{object$rotation}.
+#' @param centered logical indicating if \code{newdata} is already centered.
+#' If \code{FALSE} (default), \code{newdata} is centered using its own
+#' columnwise means before projection. The training mean is not stored in
+#' the \code{"fpc"} object, so this provides an approximation that is exact
+#' only when \code{newdata} is the training data.
+#' @param int_rule quadrature rule used for the inner products; passed to
+#' \code{\link{fpc_coefs}}.
+#' @param ... further arguments passed to other methods.
+#' @return
+#' \describe{
+#'   \item{\code{print.fpc}}{returns \code{x} invisibly after printing a
+#'   short summary.}
+#'   \item{\code{summary.fpc}}{returns an object of class
+#'   \code{"summary.fpc"} with the standard deviations and the proportion
+#'   (and cumulative proportion) of explained variance.}
+#'   \item{\code{plot.fpc}}{produces a two-panel plot with a barplot of the
+#'   proportion of variance and a plot of the selected eigenfunctions.
+#'   Returns \code{x} invisibly.}
+#'   \item{\code{predict.fpc}}{returns an \eqn{n \times \ell}{n x l} matrix
+#'   of scores, where \eqn{n} is the number of new curves and
+#'   \eqn{\ell}{l} the number of components in \code{object}.}
+#' }
+#' @examples
+#' # FPC of an Ornstein--Uhlenbeck sample
+#' set.seed(1)
+#' X_fdata <- r_ou(n = 100, t = seq(0, 1, l = 51), sigma = 1)
+#' X_fpc <- fpc(X_fdata = X_fdata, n_fpc = 5)
+#'
+#' # print and summary methods
+#' print(X_fpc)
+#' summary(X_fpc)
+#'
+#' # plot method
+#' plot(X_fpc, ind = 1:3)
+#'
+#' # predict method (training data round-trip)
+#' scores_new <- predict(X_fpc, newdata = X_fdata)
+#' max(abs(scores_new - X_fpc$scores))
+#' @name fpc-S3
+NULL
+
+
+#' @rdname fpc-S3
+#' @export
+print.fpc <- function(x, ...) {
+
+  cat("Functional principal components\n")
+  cat(sprintf("  Components: %d\n", length(x[["l"]])))
+  arg_range <- range(x[["rotation"]][["argvals"]])
+  cat(sprintf("  Argvals range: [%g, %g]\n", arg_range[1], arg_range[2]))
+  cat(sprintf("  Equispaced grid: %s\n", x[["equispaced"]]))
+  vars <- x[["d"]]^2
+  prop_cum <- cumsum(vars) / sum(vars)
+  show <- seq_len(min(5, length(prop_cum)))
+  cat("  Cumulative proportion of variance (first ",
+      length(show), "): ", sep = "")
+  cat(paste0(sprintf("%.4f", prop_cum[show]), collapse = ", "), "\n",
+      sep = "")
+  invisible(x)
+
+}
+
+
+#' @rdname fpc-S3
+#' @export
+summary.fpc <- function(object, ...) {
+
+  vars <- object[["d"]]^2
+  prop <- vars / sum(vars)
+  cum_prop <- cumsum(prop)
+  importance <- rbind("Standard deviation" = object[["d"]],
+                      "Proportion of Variance" = prop,
+                      "Cumulative Proportion" = cum_prop)
+  colnames(importance) <- paste0("PC", object[["l"]])
+  out <- list("n_fpc" = length(object[["l"]]),
+              "importance" = importance,
+              "equispaced" = object[["equispaced"]])
+  class(out) <- "summary.fpc"
+  out
+
+}
+
+
+#' @rdname fpc-S3
+#' @param digits number of significant digits in the printed output of the
+#' \code{summary} methods. Defaults to \code{4}.
+#' @export
+print.summary.fpc <- function(x, digits = 4, ...) {
+
+  cat("Summary of functional principal components\n")
+  cat(sprintf("  Number of components: %d\n", x[["n_fpc"]]))
+  cat(sprintf("  Equispaced grid: %s\n\n", x[["equispaced"]]))
+  cat("Importance of components:\n")
+  print(round(x[["importance"]], digits = digits))
+  invisible(x)
+
+}
+
+
+#' @rdname fpc-S3
+#' @export
+plot.fpc <- function(x, ind = seq_len(min(3, length(x[["l"]]))), ...) {
+
+  if (any(ind < 1) || any(ind > length(x[["l"]]))) {
+
+    stop("ind must be a vector of indexes between 1 and ",
+         length(x[["l"]]))
+
+  }
+  old_par <- par(no.readonly = TRUE)
+  on.exit(par(old_par))
+  par(mfrow = c(1, 2))
+
+  # Screeplot of the proportion of variance
+  vars <- x[["d"]]^2
+  prop <- vars / sum(vars)
+  n_show <- min(10, length(prop))
+  barplot(prop[seq_len(n_show)],
+          names.arg = paste0("PC", seq_len(n_show)),
+          main = "Proportion of variance",
+          ylab = "Proportion", col = "gray80")
+
+  # Eigenfunctions
+  fda.usc::plot.fdata(x[["rotation"]][ind, ],
+                      main = "Eigenfunctions",
+                      ylab = expression(hat(psi)(t)), ...)
+  invisible(x)
+
+}
+
+
+#' @rdname fpc-S3
+#' @export
+predict.fpc <- function(object, newdata, int_rule = "trapezoid",
+                        centered = FALSE, ...) {
+
+  if (!inherits(object, "fpc")) {
+
+    stop("object must be of class \"fpc\"")
+
+  }
+  if (!fda.usc::is.fdata(newdata)) {
+
+    stop("newdata must be an \"fdata\" object")
+
+  }
+
+  # Check argvals coincide with the eigenfunctions' grid
+  arg_obj <- object[["rotation"]][["argvals"]]
+  arg_new <- newdata[["argvals"]]
+  if (length(arg_new) != length(arg_obj) ||
+      any(abs(arg_new - arg_obj) > sqrt(.Machine[["double.eps"]]))) {
+
+    stop("The argvals of newdata must match those of object$rotation")
+
+  }
+
+  # Center newdata using its own columnwise means (approximation: the
+  # training mean is not stored)
+  if (!centered) {
+
+    newdata <- fdata_cen(X_fdata = newdata)
+
+  }
+
+  # Project onto the eigenfunctions via fpc_coefs
+  fpc_coefs(X_fdata = newdata, X_fpc = object,
+            ind_X_fpc = seq_along(object[["l"]]),
+            int_rule = int_rule)
+
+}

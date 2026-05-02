@@ -533,7 +533,137 @@ cv_glmnet <- function(x, y, alpha = c("lasso", "ridge")[1], lambda = NULL,
   beta_hat <- beta_hat[2:(p + 1), , drop = FALSE]
 
   # Result
-  return(list("beta_hat" = beta_hat, "intercept" = a0,
-              "lambda" = lambda, "cv" = cv, "fit" = fit))
+  out <- list("beta_hat" = beta_hat, "intercept" = a0,
+              "lambda" = lambda, "cv" = cv, "fit" = fit)
+  class(out) <- "cv_glmnet"
+  return(out)
+
+}
+
+
+#' @title S3 methods for the \code{"cv_glmnet"} class
+#'
+#' @description \code{print}, \code{coef}, \code{predict}, and \code{plot}
+#' methods for objects of class \code{"cv_glmnet"} returned by
+#' \code{\link{cv_glmnet}}.
+#'
+#' @param x,object a \code{"cv_glmnet"} object as returned by
+#' \code{\link{cv_glmnet}}.
+#' @param newx a matrix of new predictor values. If a vector is provided,
+#' it is coerced to a column matrix.
+#' @param intercept logical; if \code{TRUE} (default in \code{coef}), the
+#' intercept row is prepended to the coefficient matrix.
+#' @param ... further arguments passed to other methods.
+#' @return
+#' \describe{
+#'   \item{\code{print.cv_glmnet}}{returns \code{x} invisibly.}
+#'   \item{\code{coef.cv_glmnet}}{returns a matrix of coefficients of
+#'   size \code{c(p + 1, q)} if \code{intercept = TRUE}, or
+#'   \code{c(p, q)} otherwise.}
+#'   \item{\code{predict.cv_glmnet}}{returns a matrix of predictions of
+#'   size \code{c(nrow(newx), q)}.}
+#'   \item{\code{plot.cv_glmnet}}{produces the cross-validation curve when
+#'   the object stores one (i.e. when \code{lambda} was selected by CV);
+#'   otherwise plots the underlying \code{\link[glmnet]{glmnet}} fit.
+#'   Returns \code{x} invisibly.}
+#' }
+#' @examples
+#' # Simulate data
+#' set.seed(123)
+#' n <- 50; p <- 5; q <- 2
+#' x <- matrix(rnorm(n * p), nrow = n)
+#' beta <- matrix(rnorm(p * q), nrow = p)
+#' y <- x \%*\% beta + matrix(rnorm(n * q), nrow = n)
+#'
+#' # Fit and inspect
+#' cv <- cv_glmnet(x = x, y = y, alpha = "ridge")
+#' print(cv)
+#' coef(cv)
+#'
+#' # Predict on new observations
+#' newx <- matrix(rnorm(10 * p), nrow = 10)
+#' yhat <- predict(cv, newx = newx)
+#' dim(yhat)
+#' @name cv_glmnet-S3
+NULL
+
+
+#' @rdname cv_glmnet-S3
+#' @export
+print.cv_glmnet <- function(x, ...) {
+
+  cat("Regularized linear model fit (cv_glmnet)\n")
+  cat(sprintf("  Coefficients: %d x %d\n",
+              nrow(x[["beta_hat"]]), ncol(x[["beta_hat"]])))
+  cat(sprintf("  Lambda: %.6g\n", x[["lambda"]]))
+  has_intercept <- any(abs(as.numeric(x[["intercept"]])) > 0)
+  cat(sprintf("  Intercept fitted: %s\n", has_intercept))
+  cat(sprintf("  Lambda from cross-validation: %s\n",
+              !is.null(x[["cv"]])))
+  invisible(x)
+
+}
+
+
+#' @rdname cv_glmnet-S3
+#' @export
+coef.cv_glmnet <- function(object, intercept = TRUE, ...) {
+
+  beta <- as.matrix(object[["beta_hat"]])
+  if (intercept) {
+
+    a0 <- as.matrix(object[["intercept"]])
+    out <- rbind(a0, beta)
+    rownames(out) <- c("(Intercept)",
+                       paste0("V", seq_len(nrow(beta))))
+
+  } else {
+
+    out <- beta
+    rownames(out) <- paste0("V", seq_len(nrow(beta)))
+
+  }
+  out
+
+}
+
+
+#' @rdname cv_glmnet-S3
+#' @export
+predict.cv_glmnet <- function(object, newx, ...) {
+
+  if (is.null(dim(newx))) {
+
+    newx <- cbind(newx)
+
+  }
+  beta <- as.matrix(object[["beta_hat"]])
+  a0 <- as.numeric(object[["intercept"]])
+  if (ncol(newx) != nrow(beta)) {
+
+    stop(sprintf("newx has %d columns but the model expects %d",
+                 ncol(newx), nrow(beta)))
+
+  }
+  pred <- newx %*% beta
+  sweep(pred, 2, a0, "+")
+
+}
+
+
+#' @rdname cv_glmnet-S3
+#' @export
+plot.cv_glmnet <- function(x, ...) {
+
+  if (!is.null(x[["cv"]])) {
+
+    plot(x[["cv"]], ...)
+
+  } else {
+
+    plot(x[["fit"]], ...)
+
+  }
+  invisible(x)
 
 }

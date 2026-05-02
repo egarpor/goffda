@@ -61,13 +61,16 @@
 #' improves the computational expediency notably. Defaults to \code{TRUE}.
 #' @param verbose flag to show information about the testing progress. Defaults
 #' to \code{TRUE}.
-#' @param plot_dens flag to indicate if a kernel density estimation of the
-#' bootstrap statistics shall be plotted. Defaults to \code{TRUE}.
-#' @param plot_proc whether to display a graphical tool to identify the
-#' degree of departure from the null hypothesis. If \code{TRUE} (default),
-#' the residual marked empirical process, projected in several FPC directions
-#' of \code{X} and \code{Y}, is shown, together with bootstrap analogues.
-#' The FPC directions are ones selected at the estimation stage.
+#' @param plot_dens \strong{Deprecated.} If \code{TRUE}, plot a kernel density
+#' estimation of the bootstrap statistics during the call. Defaults to
+#' \code{FALSE}; use \code{\link{plot.flm_test}} on the returned object
+#' instead. Triggers a deprecation warning.
+#' @param plot_proc \strong{Deprecated.} If \code{TRUE}, display a graphical
+#' tool to identify the degree of departure from the null hypothesis (the
+#' residual marked empirical process, projected in several FPC directions
+#' of \code{X} and \code{Y}, together with bootstrap analogues). Defaults
+#' to \code{FALSE}; use \code{\link{plot.flm_test}} on the returned object
+#' instead. Triggers a deprecation warning.
 #' @param plot_max_procs maximum number of bootstrapped processes to plot in
 #' the graphical tool. Set as the minimum of \code{plot_max_procs} and \code{B}.
 #' Defaults to \code{100}.
@@ -80,7 +83,9 @@
 #' @param refit_lambda flag to reselect \eqn{lambda} in each bootstrap
 #' replicate, incorporating its variability in the bootstrap calibration.
 #' Much more time consumig. Defaults to \code{FALSE}.
-#' @return An object of the \code{htest} class with the following elements:
+#' @return An object of class \code{c("flm_test", "htest")} (so the standard
+#' \code{print} method for \code{"htest"} continues to work) with the
+#' following elements:
 #' \item{statistic}{test statistic.}
 #' \item{p.value}{\eqn{p}-value of the test.}
 #' \item{boot_statistics}{the bootstrapped test statistics, a vector
@@ -95,6 +100,11 @@
 #' \item{boot_lambda}{bootstrapped \eqn{lambda}.}
 #' \item{boot_p}{a list with the bootstrapped indexes of the FPC considered
 #' for \code{X}.}
+#' \item{boot_E_scores}{three-dimensional array of size
+#' \code{c(n, q, min(plot_max_procs, B))} with the residual FPC scores
+#' from the bootstrap iterations, used by \code{\link{plot.flm_test}} to
+#' draw the residual marked empirical processes. \code{NA} if
+#' \code{save_boot_stats = FALSE}.}
 #' \item{data.name}{name of the value of \code{data}.}
 #' @details
 #' The function implements the bootstrap-based goodness-of-fit test for
@@ -109,8 +119,9 @@
 #' null hypothesis notably facilitates the calibration of the test (see
 #' García-Portugués et al., 2021).
 #'
-#' The graphical tool obtained with \code{plot_proc = TRUE} is based on
-#' an extension of the tool described in García-Portugués et al. (2014).
+#' The graphical tool obtained with \code{plot(test, type = "proc")} on the
+#' returned object is based on an extension of the tool described in
+#' García-Portugués et al. (2014).
 #'
 #' Repeated observations on \code{X} are internally removed, as otherwise they
 #' would cause \code{NaN}s in \code{Adot}. Missing values on \code{X} and
@@ -309,7 +320,8 @@
 flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
                      p = NULL, q = NULL, thre_p = 0.99, thre_q = 0.99,
                      lambda = NULL, boot_scores = TRUE, verbose = TRUE,
-                     plot_dens = TRUE, plot_proc = TRUE, plot_max_procs = 100,
+                     plot_dens = FALSE, plot_proc = FALSE,
+                     plot_max_procs = 100,
                      plot_max_p = 2, plot_max_q = 2, save_fit_flm = TRUE,
                      save_boot_stats = TRUE, int_rule = "trapezoid",
                      refit_lambda = FALSE, ...) {
@@ -321,6 +333,16 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
 
     stop(paste("Bootstrap resampling of the residuals FPC coefficients is",
                "not implemented for est_method = \"fpcr_l1\""))
+
+  }
+
+  # Deprecation: in-line plotting via plot_dens / plot_proc has been
+  # superseded by the plot() method on the returned object
+  if (isTRUE(plot_dens) || isTRUE(plot_proc)) {
+
+    warning("Arguments 'plot_dens' and 'plot_proc' are deprecated; ",
+            "use plot() on the returned object instead. They will be ",
+            "removed in a future release.", call. = FALSE)
 
   }
 
@@ -638,11 +660,12 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
                             NA, fit_flm[["lambda"]]), B)
   boot_p_hat <- rep(list(p_hat), B)
 
-  # Array with the estimated bootstrap errors, saved for the processes plot
-  # done plot_max_procs bootstrap processes
+  # Array with bootstrap residual FPC scores, used by plot.flm_test to draw
+  # the residual marked empirical processes. Stored cyclically up to
+  # plot_max_procs slices; written regardless of plot_proc/plot_dens because
+  # those flags are deprecated and the post-hoc plot() method needs them.
   plot_max_procs <- min(plot_max_procs, B)
-  E_star_hat_scores <-
-    array(dim = c(n, q, ifelse(plot_proc, plot_max_procs, 1)))
+  E_star_hat_scores <- array(dim = c(n, q, plot_max_procs))
 
   # Composite hypothesis
   if (is.null(beta0)) {
@@ -650,8 +673,9 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
     # Bootstrap resampling
     for (i in 1:B) {
 
-      # Save the bootstrap scores? Only plot_max_procs of them in a cyclic way
-      j <- ifelse(plot_proc, (i - 1) %% plot_max_procs + 1, 1)
+      # Cyclic index into the bootstrap residual scores buffer (always
+      # populated; consumed by plot.flm_test)
+      j <- (i - 1) %% plot_max_procs + 1
 
       # Golden section binary variable
       V <- sample(x = c(1 - phi, phi), prob = c(prob, 1 - prob),
@@ -778,8 +802,9 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
     # Bootstrap resampling
     for (i in 1:B) {
 
-      # Save the bootstrap scores? Only plot_max_procs of them in a cyclic way
-      j <- ifelse(plot_proc, (i - 1) %% plot_max_procs + 1, 1)
+      # Cyclic index into the bootstrap residual scores buffer (always
+      # populated; consumed by plot.flm_test)
+      j <- (i - 1) %% plot_max_procs + 1
 
       # Golden section binary variable
       V <- sample(x = c(1 - phi, phi), prob = c(prob, 1 - prob),
@@ -845,98 +870,31 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
   # Approximation of the p-value by MC
   p_value <- mean(orig_stat < boot_stats)
 
-  # Plot the density of the bootstrapped statistics and the value of
-  # the statistic
-  if (plot_dens) {
+  # In-line plotting (deprecated). The canonical entry-point is
+  # plot.flm_test() on the returned object; a deprecation warning has
+  # already been emitted at the start of the function.
+  if (isTRUE(plot_dens) || isTRUE(plot_proc)) {
 
-    plot(ks::kde(x = boot_stats, positive = TRUE),
-         xlim = range(c(boot_stats, orig_stat)),
-         main = paste("p-value:", p_value))
-    rug(boot_stats)
-    abline(v = orig_stat, col = 2)
-
-  }
-
-  # Plot the original and bootstrapped processes projected on FPC directions
-  if (plot_proc) {
-
-    # Function that computes the residual marked projected empirical process
-    # based on two-side projections Rn(u, gamma_X, gamma_Y). It does so for
-    # gamma_X and gamma_Y being a FPC of X or Y, respectively, such that the
-    # projections of X become the scores of X and the projected residuals are
-    # the scores of the residuals on the FPC of Y
-    Rn <- function(X_scores, E_hat_scores, ind_X_fpc, ind_Y_fpc) {
-
-      # Projections on gamma_X and gamma_Y as scores
-      proj_X_gamma <- X_scores[, ind_X_fpc]
-      proj_E_gamma <- E_hat_scores[, ind_Y_fpc]
-
-      # Rn(u, gamma_X, gamma_Y)
-      ord <- order(proj_X_gamma)
-      y <- cumsum(proj_E_gamma[ord]) / sqrt(nrow(E_hat_scores))
-      stepfun(x = proj_X_gamma[ord], y = c(0, y))
-
+    plot_what <- if (isTRUE(plot_dens) && isTRUE(plot_proc)) {
+      "both"
+    } else if (isTRUE(plot_dens)) {
+      "dens"
+    } else {
+      "proc"
     }
-
-    # Plotting function with original and bootstrapped processes
-    plot_Rn <- function(X_scores, E_hat_scores, E_star_hat_scores,
-                        ind_X_fpc, ind_Y_fpc, main = "") {
-
-      # Rn processes, both for original and bootstrapped data
-      Rn_processes <- c(
-        Rn(X_scores = X_scores, E_hat_scores = E_hat_scores,
-           ind_X_fpc = ind_X_fpc, ind_Y_fpc = ind_Y_fpc),
-        lapply(seq_len(dim(E_star_hat_scores)[3]), function(i) {
-          Rn(X_scores = X_scores,
-             E_hat_scores = as.matrix(E_star_hat_scores[, , i]),
-             ind_X_fpc = ind_X_fpc, ind_Y_fpc = ind_Y_fpc)})
-        )
-
-      # Create and decorate plot for the original process
-      ylim <- range(lapply(Rn_processes, function(x) x(knots(x))))
-      xlab <- substitute(paste(symbol("\xe1"), list(Chi, hat(Psi)[i]),
-                               symbol("\xf1")), list(i = ind_X_fpc))
-      ylab <- substitute(R[n](u, hat(Psi)[i], hat(Phi)[j]),
-                         list(i = ind_X_fpc, j = ind_Y_fpc))
-      plot(Rn_processes[[1]], lwd = 2, pch = NA, ylim = ylim, main = main,
-           xlab = "", ylab = "")
-      mtext(text = xlab, side = 1, line = 3, cex = 0.85)
-      mtext(text = ylab, side = 2, line = 2.5, cex = 0.85)
-      rug(knots(Rn_processes[[1]]))
-
-      # Add bootstrap processes
-      sapply(seq_len(dim(E_star_hat_scores)[3]), function(i) {
-        plot(Rn_processes[[i + 1]], add = TRUE,
-             col = gray(0.75, alpha = 0.75), pch = NA)
-      })
-
-      # Replot original process
-      plot(Rn_processes[[1]], add = TRUE, lwd = 2, pch = NA)
-
-    }
-
-    # Reset par() for the user
-    old_par <- par(no.readonly = TRUE)
-    on.exit(par(old_par))
-
-    # Produce the pairs plot
-    p_max <- min(length(p_hat), plot_max_p)
-    q_max <- min(length(q_thre), plot_max_q)
-    par(mfrow = c(p_max, q_max),
-        mar = c(4, 4, 3, 2) + 0.1)
-    for (i in p_hat[1:p_max]) {
-      for (j in q_thre[1:q_max]) {
-
-        plot_Rn(X_scores = fit_flm[["X_fpc"]][["scores"]],
-                E_hat_scores = E_hat_scores,
-                E_star_hat_scores = E_star_hat_scores,
-                ind_X_fpc = i, ind_Y_fpc = j,
-                main = substitute(Chi * " FPC " * i * ", " * Y * " FPC " * j,
-                                  list(i = i, j = j)))
-
-      }
-    }
-    par(mfrow = c(1, 1))
+    plot_flm_test_internal(
+      boot_statistics = boot_stats,
+      statistic = orig_stat,
+      p.value = p_value,
+      boot_E_scores = E_star_hat_scores,
+      X_scores = fit_flm[["X_fpc"]][["scores"]],
+      E_hat_scores = E_hat_scores,
+      p_hat = p_hat,
+      q_thre = q_thre,
+      what = plot_what,
+      plot_max_p = plot_max_p,
+      plot_max_q = plot_max_q
+    )
 
   }
 
@@ -951,17 +909,270 @@ flm_test <- function(X, Y, beta0 = NULL, B = 500, est_method = "fpcr",
     boot_stats <- NA
     boot_lambda <- NA
     boot_p_hat <- NA
+    E_star_hat_scores <- NA
 
   }
 
-  # Return htest object
+  # Return c("flm_test", "htest") object: keeps print.htest working out of
+  # the box and enables plot.flm_test / summary.flm_test
   result <- structure(list(statistic = c("statistic" = orig_stat),
                            p.value = p_value, boot_statistics = boot_stats,
                            method = meth, parameter = c("p" = p, "q" = q),
                            p = p_hat, q = q_thre, fit_flm = fit_flm,
                            boot_lambda = boot_lambda, boot_p = boot_p_hat,
+                           boot_E_scores = E_star_hat_scores,
                            data.name = data_name))
-  class(result) <- "htest"
+  class(result) <- c("flm_test", "htest")
   return(result)
+
+}
+
+
+# Helper used both by the (deprecated) inline plotting in flm_test() and by
+# plot.flm_test() on a fitted object. Not exported.
+plot_flm_test_internal <- function(boot_statistics, statistic, p.value,
+                                   boot_E_scores, X_scores, E_hat_scores,
+                                   p_hat, q_thre,
+                                   what = c("dens", "proc", "both"),
+                                   plot_max_p = 2, plot_max_q = 2) {
+
+  what <- match.arg(what)
+
+  ## Density of bootstrap statistics
+  if (what %in% c("dens", "both")) {
+
+    plot(ks::kde(x = boot_statistics, positive = TRUE),
+         xlim = range(c(boot_statistics, statistic)),
+         main = paste("p-value:", p.value))
+    rug(boot_statistics)
+    abline(v = statistic, col = 2)
+
+  }
+
+  ## Residual marked empirical processes
+  if (what %in% c("proc", "both")) {
+
+    Rn <- function(X_scores, E_hat_scores, ind_X_fpc, ind_Y_fpc) {
+
+      proj_X_gamma <- X_scores[, ind_X_fpc]
+      proj_E_gamma <- E_hat_scores[, ind_Y_fpc]
+      ord <- order(proj_X_gamma)
+      y <- cumsum(proj_E_gamma[ord]) / sqrt(nrow(E_hat_scores))
+      stepfun(x = proj_X_gamma[ord], y = c(0, y))
+
+    }
+
+    plot_Rn <- function(X_scores, E_hat_scores, E_star_hat_scores,
+                        ind_X_fpc, ind_Y_fpc, main = "") {
+
+      Rn_processes <- c(
+        Rn(X_scores = X_scores, E_hat_scores = E_hat_scores,
+           ind_X_fpc = ind_X_fpc, ind_Y_fpc = ind_Y_fpc),
+        lapply(seq_len(dim(E_star_hat_scores)[3]), function(i) {
+          Rn(X_scores = X_scores,
+             E_hat_scores = as.matrix(E_star_hat_scores[, , i]),
+             ind_X_fpc = ind_X_fpc, ind_Y_fpc = ind_Y_fpc)})
+      )
+      ylim <- range(lapply(Rn_processes, function(x) x(knots(x))))
+      xlab <- substitute(paste(symbol("\xe1"), list(Chi, hat(Psi)[i]),
+                               symbol("\xf1")), list(i = ind_X_fpc))
+      ylab <- substitute(R[n](u, hat(Psi)[i], hat(Phi)[j]),
+                         list(i = ind_X_fpc, j = ind_Y_fpc))
+      plot(Rn_processes[[1]], lwd = 2, pch = NA, ylim = ylim, main = main,
+           xlab = "", ylab = "")
+      mtext(text = xlab, side = 1, line = 3, cex = 0.85)
+      mtext(text = ylab, side = 2, line = 2.5, cex = 0.85)
+      rug(knots(Rn_processes[[1]]))
+      sapply(seq_len(dim(E_star_hat_scores)[3]), function(i) {
+        plot(Rn_processes[[i + 1]], add = TRUE,
+             col = gray(0.75, alpha = 0.75), pch = NA)
+      })
+      plot(Rn_processes[[1]], add = TRUE, lwd = 2, pch = NA)
+
+    }
+
+    old_par <- par(no.readonly = TRUE)
+    on.exit(par(old_par))
+    p_max <- min(length(p_hat), plot_max_p)
+    q_max <- min(length(q_thre), plot_max_q)
+    par(mfrow = c(p_max, q_max), mar = c(4, 4, 3, 2) + 0.1)
+    for (i in p_hat[1:p_max]) {
+      for (j in q_thre[1:q_max]) {
+
+        plot_Rn(X_scores = X_scores,
+                E_hat_scores = E_hat_scores,
+                E_star_hat_scores = boot_E_scores,
+                ind_X_fpc = i, ind_Y_fpc = j,
+                main = substitute(Chi * " FPC " * i * ", " * Y * " FPC " * j,
+                                  list(i = i, j = j)))
+
+      }
+    }
+    par(mfrow = c(1, 1))
+
+  }
+
+  invisible(NULL)
+
+}
+
+
+#' @title S3 methods for the \code{"flm_test"} class
+#'
+#' @description \code{summary} and \code{plot} methods for objects returned
+#' by \code{\link{flm_test}}. \code{print} is inherited from the
+#' \code{"htest"} class.
+#'
+#' @param x,object an \code{"flm_test"} object as returned by
+#' \code{\link{flm_test}}.
+#' @param type which graphical display to produce: \code{"dens"} (kernel
+#' density of the bootstrap statistics with the observed value
+#' superimposed), \code{"proc"} (residual marked empirical process and its
+#' bootstrap analogues, projected onto the FPC of \eqn{X} and \eqn{Y}), or
+#' \code{"both"}. Defaults to \code{"dens"}.
+#' @param plot_max_p,plot_max_q maximum number of FPC directions to be
+#' considered when \code{type \%in\% c("proc", "both")}. Default to
+#' \code{2}.
+#' @param ... further arguments passed to other methods.
+#' @return
+#' \describe{
+#'   \item{\code{summary.flm_test}}{a \code{"summary.flm_test"} list with
+#'   the test method, statistic, p-value, dimensions, and a numeric summary
+#'   of the bootstrap statistics.}
+#'   \item{\code{plot.flm_test}}{produces the requested graphical display
+#'   and returns \code{NULL} invisibly. Requires \code{save_boot_stats =
+#'   TRUE} (and \code{save_fit_flm = TRUE} for \code{type \%in\% c("proc",
+#'   "both")}); otherwise an informative error is signalled.}
+#' }
+#' @examples
+#' set.seed(1)
+#' n <- 60
+#' X_fdata <- r_ou(n = n, t = seq(0, 1, l = 51))
+#' Y_fdata <- r_ou(n = n, t = seq(0, 1, l = 51))
+#' test <- flm_test(X = X_fdata, Y = Y_fdata, B = 50, verbose = FALSE)
+#' summary(test)
+#' plot(test, type = "dens")
+#' @name flm_test-S3
+NULL
+
+
+#' @rdname flm_test-S3
+#' @export
+summary.flm_test <- function(object, ...) {
+
+  has_boot <- !(length(object[["boot_statistics"]]) == 1 &&
+                  is.na(object[["boot_statistics"]][1]))
+  out <- list(
+    method = object[["method"]],
+    statistic = as.numeric(object[["statistic"]]),
+    p.value = object[["p.value"]],
+    p = length(object[["p"]]),
+    q = length(object[["q"]]),
+    n_boot = if (has_boot) length(object[["boot_statistics"]]) else 0L,
+    boot_summary = if (has_boot) {
+      c(mean = mean(object[["boot_statistics"]]),
+        sd = sd(object[["boot_statistics"]]),
+        median = stats::median(object[["boot_statistics"]]))
+    } else {
+      NULL
+    }
+  )
+  class(out) <- "summary.flm_test"
+  out
+
+}
+
+
+#' @rdname flm_test-S3
+#' @param digits number of significant digits in the printed output of the
+#' \code{summary} method. Defaults to \code{4}.
+#' @export
+print.summary.flm_test <- function(x, digits = 4, ...) {
+
+  cat("\n", x[["method"]], "\n\n", sep = "")
+  cat(sprintf("  Statistic: %s\n", format(x[["statistic"]], digits = digits)))
+  cat(sprintf("  p-value:   %s\n", format(x[["p.value"]], digits = digits)))
+  cat(sprintf("  Dimensions used: p = %d, q = %d\n", x[["p"]], x[["q"]]))
+  if (!is.null(x[["boot_summary"]])) {
+
+    cat(sprintf("  Bootstrap statistics (B = %d):\n", x[["n_boot"]]))
+    cat(sprintf("    mean = %s, sd = %s, median = %s\n",
+                format(x[["boot_summary"]][["mean"]], digits = digits),
+                format(x[["boot_summary"]][["sd"]], digits = digits),
+                format(x[["boot_summary"]][["median"]], digits = digits)))
+
+  } else {
+
+    cat("  Bootstrap statistics not stored ",
+        "(refit with save_boot_stats = TRUE).\n", sep = "")
+
+  }
+  invisible(x)
+
+}
+
+
+#' @rdname flm_test-S3
+#' @export
+plot.flm_test <- function(x, type = c("dens", "proc", "both"),
+                          plot_max_p = 2, plot_max_q = 2, ...) {
+
+  type <- match.arg(type)
+
+  # Sanity checks against pruned objects
+  boot_missing <- length(x[["boot_statistics"]]) == 1 &&
+    is.na(x[["boot_statistics"]][1])
+  if (boot_missing) {
+
+    stop("Bootstrap statistics not stored; refit flm_test with ",
+         "save_boot_stats = TRUE.")
+
+  }
+  if (type %in% c("proc", "both")) {
+
+    fit_missing <- length(x[["fit_flm"]]) == 1 &&
+      identical(x[["fit_flm"]], NA)
+    if (fit_missing) {
+
+      stop("Fitted model not stored; refit flm_test with ",
+           "save_fit_flm = TRUE to use type = \"proc\".")
+
+    }
+    boot_E_missing <- is.atomic(x[["boot_E_scores"]]) &&
+      length(x[["boot_E_scores"]]) == 1 &&
+      is.na(x[["boot_E_scores"]][1])
+    if (boot_E_missing) {
+
+      stop("Bootstrap residual scores not stored; refit flm_test with ",
+           "save_boot_stats = TRUE to use type = \"proc\".")
+
+    }
+
+  }
+
+  X_scores <- if (type %in% c("proc", "both")) {
+    x[["fit_flm"]][["X_fpc"]][["scores"]]
+  } else {
+    NULL
+  }
+  E_hat_scores <- if (type %in% c("proc", "both")) {
+    x[["fit_flm"]][["residuals_scores"]]
+  } else {
+    NULL
+  }
+
+  plot_flm_test_internal(
+    boot_statistics = x[["boot_statistics"]],
+    statistic = as.numeric(x[["statistic"]]),
+    p.value = x[["p.value"]],
+    boot_E_scores = x[["boot_E_scores"]],
+    X_scores = X_scores,
+    E_hat_scores = E_hat_scores,
+    p_hat = x[["p"]],
+    q_thre = x[["q"]],
+    what = type,
+    plot_max_p = plot_max_p,
+    plot_max_q = plot_max_q
+  )
 
 }

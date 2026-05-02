@@ -101,6 +101,10 @@ estimation methods \code{"fpcr_l2"}, \code{"fpcr_l1"}, and
 \code{"fpcr_l1s"}.}
 \item{cv}{cross-validation object returned by
 \code{\link{cv_glmnet}}.}
+\item{scalar_X, scalar_Y}{logical flags recording whether \code{X} and
+\code{Y} were supplied as scalar (\code{TRUE}) or functional
+(\code{FALSE}). Used by \code{\link{predict.flm_est}} to dispatch to the
+right branch.}
 }
 \description{
 Estimation of the linear operator relating a

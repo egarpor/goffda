@@ -103,6 +103,10 @@
 #' \code{"fpcr_l1s"}.}
 #' \item{cv}{cross-validation object returned by
 #' \code{\link{cv_glmnet}}.}
+#' \item{scalar_X, scalar_Y}{logical flags recording whether \code{X} and
+#' \code{Y} were supplied as scalar (\code{TRUE}) or functional
+#' (\code{FALSE}). Used by \code{\link{predict.flm_est}} to dispatch to the
+#' right branch.}
 #' @details
 #' \code{flm_est} deals seamlessly with either functional or scalar inputs
 #' for the predictor and response. In the case of scalar inputs, the
@@ -655,11 +659,404 @@ flm_est <- function(X, Y, est_method = "fpcr_l1s",
   }
 
   # Final object
-  return(list("Beta_hat" = Beta_hat, "Beta_hat_scores" = Beta_hat_scores,
+  out <- list("Beta_hat" = Beta_hat, "Beta_hat_scores" = Beta_hat_scores,
               "H_hat" = H_hat, "p_thre" = p_thre, "q_thre" = q_thre,
               "p_hat" = p_hat, "est_method" = est_method,
               "Y_hat" = Y_hat, "Y_hat_scores" = Y_hat_scores,
               "residuals" = residuals, "residuals_scores" = residuals_scores,
-              "X_fpc" = X_fpc, "Y_fpc" = Y_fpc, "lambda" = lambda, "cv" = cv))
+              "X_fpc" = X_fpc, "Y_fpc" = Y_fpc, "lambda" = lambda, "cv" = cv,
+              "scalar_X" = scalar_X, "scalar_Y" = scalar_Y)
+  class(out) <- "flm_est"
+  return(out)
+
+}
+
+
+#' @title S3 methods for the \code{"flm_est"} class
+#'
+#' @description \code{print}, \code{summary}, \code{coef}, \code{fitted},
+#' \code{residuals}, \code{predict}, and \code{plot} methods for objects of
+#' class \code{"flm_est"} returned by \code{\link{flm_est}}.
+#'
+#' @param x,object an \code{"flm_est"} object as returned by
+#' \code{\link{flm_est}}.
+#' @param newdata new predictor values for prediction. An
+#' \code{\link[fda.usc]{fdata}} object if \code{X} was functional, or a
+#' numeric vector if \code{X} was scalar. Its grid (\code{argvals}) must
+#' match the one used when fitting.
+#' @param type for \code{coef}, either \code{"matrix"} (default; the
+#' bivariate kernel \eqn{\hat\beta} on the original grid) or \code{"scores"}
+#' (its FPC tensor coefficients). For \code{fitted}, \code{residuals} and
+#' \code{predict}, either \code{"response"} (default; on the response
+#' scale) or \code{"scores"} (FPC coefficients).
+#' @param int_rule quadrature rule used for projecting \code{newdata}; passed
+#' to \code{\link{predict.fpc}}.
+#' @param ... further arguments passed to other methods.
+#' @details
+#' \code{predict} centers \code{newdata} columnwise before projecting onto the
+#' eigenfunctions stored in \code{object$X_fpc}. Since the training mean of
+#' \code{X} is not stored in the fitted object, predictions for \code{newdata}
+#' that does not share the mean structure of the training sample are an
+#' approximation; for accurate prediction, the user should center
+#' \code{newdata} with the training mean before calling \code{predict}, and
+#' pass it via the \code{centered} argument of \code{\link{predict.fpc}} (not
+#' available for the scalar \code{X} branch).
+#' @return
+#' \describe{
+#'   \item{\code{print.flm_est}}{returns \code{x} invisibly.}
+#'   \item{\code{summary.flm_est}}{returns a \code{"summary.flm_est"} list
+#'   with the estimation method, dimensions, the regularization parameter
+#'   (if any), the residual sum of squares, and a \emph{functional}
+#'   \eqn{R^2} computed from FPC scores.}
+#'   \item{\code{coef.flm_est}}{returns the bivariate kernel matrix
+#'   \eqn{\hat\beta} or its FPC scores, depending on \code{type}.}
+#'   \item{\code{fitted.flm_est}}{returns the in-sample fitted values
+#'   (\code{Y_hat}, an \code{\link[fda.usc]{fdata}} object or numeric
+#'   vector) or their FPC scores.}
+#'   \item{\code{residuals.flm_est}}{returns the in-sample residuals or
+#'   their FPC scores.}
+#'   \item{\code{predict.flm_est}}{returns predictions on the response scale
+#'   (\code{\link[fda.usc]{fdata}} for functional \code{Y}; numeric vector
+#'   for scalar \code{Y}) or as FPC scores.}
+#'   \item{\code{plot.flm_est}}{produces an \code{image} plot of
+#'   \eqn{\hat\beta(s, t)} when both \code{X} and \code{Y} are functional;
+#'   a line plot when one of them is scalar; a single value when both are
+#'   scalar. Returns \code{x} invisibly.}
+#' }
+#' @examples
+#' set.seed(123)
+#' n <- 50
+#' t <- seq(0, 1, l = 51)
+#' X_fdata <- r_ou(n = n, t = t, sigma = 2)
+#' epsilon <- r_ou(n = n, t = t, sigma = 0.5)
+#' Y_fdata <- 2 * X_fdata + epsilon
+#'
+#' fit <- flm_est(X = X_fdata, Y = Y_fdata, est_method = "fpcr_l1s")
+#' print(fit)
+#' summary(fit)
+#'
+#' # Prediction equals fitted values when newdata is the training sample
+#' pred <- predict(fit, newdata = X_fdata)
+#' max(abs(pred$data - fit$Y_hat$data))
+#' @name flm_est-S3
+NULL
+
+
+#' @rdname flm_est-S3
+#' @export
+print.flm_est <- function(x, ...) {
+
+  cat("Functional linear model fit (flm_est)\n")
+  cat(sprintf("  Estimation method: %s\n", x[["est_method"]]))
+  cat(sprintf("  Predictor: %s; Response: %s\n",
+              if (isTRUE(x[["scalar_X"]])) "scalar" else "functional",
+              if (isTRUE(x[["scalar_Y"]])) "scalar" else "functional"))
+  cat(sprintf("  Selected p (FPC of X): %d (out of %d threshold)\n",
+              length(x[["p_hat"]]), length(x[["p_thre"]])))
+  cat(sprintf("  Selected q (FPC of Y): %d\n", length(x[["q_thre"]])))
+  if (!is.null(x[["lambda"]])) {
+
+    cat(sprintf("  Lambda: %.6g\n", x[["lambda"]]))
+
+  }
+  if (!is.null(x[["residuals_scores"]])) {
+
+    rss <- sum(x[["residuals_scores"]]^2)
+    cat(sprintf("  Residual sum of squares (FPC scores): %.6g\n", rss))
+
+  }
+  invisible(x)
+
+}
+
+
+#' @rdname flm_est-S3
+#' @export
+summary.flm_est <- function(object, ...) {
+
+  has_resid <- !is.null(object[["residuals_scores"]])
+  if (has_resid) {
+
+    ss_res <- sum(object[["residuals_scores"]]^2)
+    ss_tot <- sum(object[["Y_fpc"]][["scores"]][, object[["q_thre"]],
+                                                drop = FALSE]^2)
+    r2 <- if (ss_tot > 0) 1 - ss_res / ss_tot else NA_real_
+
+  } else {
+
+    ss_res <- NA_real_
+    r2 <- NA_real_
+
+  }
+
+  out <- list("est_method" = object[["est_method"]],
+              "scalar_X" = isTRUE(object[["scalar_X"]]),
+              "scalar_Y" = isTRUE(object[["scalar_Y"]]),
+              "n" = if (!is.null(object[["X_fpc"]][["scores"]]))
+                nrow(object[["X_fpc"]][["scores"]]) else NA_integer_,
+              "p_hat" = length(object[["p_hat"]]),
+              "p_thre" = length(object[["p_thre"]]),
+              "q_thre" = length(object[["q_thre"]]),
+              "lambda" = object[["lambda"]],
+              "ss_res" = ss_res,
+              "r_squared" = r2,
+              "has_cv" = !is.null(object[["cv"]]))
+  class(out) <- "summary.flm_est"
+  out
+
+}
+
+
+#' @rdname flm_est-S3
+#' @param digits number of significant digits in the printed output of the
+#' \code{summary} methods. Defaults to \code{4}.
+#' @export
+print.summary.flm_est <- function(x, digits = 4, ...) {
+
+  cat("Summary of functional linear model fit\n")
+  cat(sprintf("  Estimation method: %s\n", x[["est_method"]]))
+  cat(sprintf("  Predictor: %s; Response: %s\n",
+              if (x[["scalar_X"]]) "scalar" else "functional",
+              if (x[["scalar_Y"]]) "scalar" else "functional"))
+  if (!is.na(x[["n"]])) {
+
+    cat(sprintf("  Sample size: %d\n", x[["n"]]))
+
+  }
+  cat(sprintf("  FPC of X selected: %d (threshold: %d)\n",
+              x[["p_hat"]], x[["p_thre"]]))
+  cat(sprintf("  FPC of Y selected: %d\n", x[["q_thre"]]))
+  if (!is.null(x[["lambda"]])) {
+
+    cat(sprintf("  Lambda: %.6g (cross-validated: %s)\n",
+                x[["lambda"]], x[["has_cv"]]))
+
+  }
+  if (!is.na(x[["r_squared"]])) {
+
+    cat(sprintf("  Residual sum of squares: %.6g\n",
+                signif(x[["ss_res"]], digits)))
+    cat(sprintf("  Functional R-squared: %.4f\n", x[["r_squared"]]))
+
+  }
+  invisible(x)
+
+}
+
+
+#' @rdname flm_est-S3
+#' @export
+coef.flm_est <- function(object, type = c("matrix", "scores"), ...) {
+
+  type <- match.arg(type)
+  switch(type,
+         "matrix" = object[["Beta_hat"]],
+         "scores" = object[["Beta_hat_scores"]])
+
+}
+
+
+#' @rdname flm_est-S3
+#' @export
+fitted.flm_est <- function(object, type = c("response", "scores"), ...) {
+
+  type <- match.arg(type)
+  if (type == "response") {
+
+    if (is.null(object[["Y_hat"]])) {
+
+      stop("Fitted values are not available; refit with ",
+           "compute_residuals = TRUE")
+
+    }
+    object[["Y_hat"]]
+
+  } else {
+
+    if (is.null(object[["Y_hat_scores"]])) {
+
+      stop("Fitted scores are not available; refit with ",
+           "compute_residuals = TRUE")
+
+    }
+    object[["Y_hat_scores"]]
+
+  }
+
+}
+
+
+#' @rdname flm_est-S3
+#' @export
+residuals.flm_est <- function(object, type = c("response", "scores"), ...) {
+
+  type <- match.arg(type)
+  if (type == "response") {
+
+    if (is.null(object[["residuals"]])) {
+
+      stop("Residuals are not available; refit with ",
+           "compute_residuals = TRUE")
+
+    }
+    object[["residuals"]]
+
+  } else {
+
+    if (is.null(object[["residuals_scores"]])) {
+
+      stop("Residual scores are not available; refit with ",
+           "compute_residuals = TRUE")
+
+    }
+    object[["residuals_scores"]]
+
+  }
+
+}
+
+
+#' @rdname flm_est-S3
+#' @export
+predict.flm_est <- function(object, newdata = NULL,
+                            type = c("response", "scores"),
+                            int_rule = "trapezoid", ...) {
+
+  type <- match.arg(type)
+
+  # No newdata: return in-sample fitted values
+  if (is.null(newdata)) {
+
+    return(fitted(object, type = type))
+
+  }
+
+  scalar_X <- isTRUE(object[["scalar_X"]])
+  scalar_Y <- isTRUE(object[["scalar_Y"]])
+
+  # Scores of newdata on the X-FPC basis (full p columns; we then subset
+  # by p_hat for the projection)
+  if (scalar_X) {
+
+    if (!is.numeric(newdata)) {
+
+      stop("newdata must be a numeric vector when X is scalar")
+
+    }
+    # Center scalar newdata using its own mean for consistency with the
+    # training pipeline, which centers internally before fitting
+    new_scores <- cbind(newdata - mean(newdata))
+
+  } else {
+
+    if (!fda.usc::is.fdata(newdata)) {
+
+      stop("newdata must be an \"fdata\" object when X is functional")
+
+    }
+    x_fpc <- object[["X_fpc"]]
+    if (!inherits(x_fpc, "fpc")) {
+
+      class(x_fpc) <- "fpc"
+
+    }
+    new_scores <- predict(x_fpc, newdata = newdata, int_rule = int_rule)
+
+  }
+
+  # Apply the estimated coefficients (subsetting by p_hat)
+  if (scalar_X) {
+
+    Yhat_scores <- new_scores %*% object[["Beta_hat_scores"]]
+
+  } else {
+
+    Yhat_scores <- new_scores[, object[["p_hat"]], drop = FALSE] %*%
+      object[["Beta_hat_scores"]]
+
+  }
+
+  if (type == "scores") {
+
+    return(Yhat_scores)
+
+  }
+
+  # Reconstruct the response
+  if (scalar_Y) {
+
+    return(drop(Yhat_scores))
+
+  } else {
+
+    y_fpc <- object[["Y_fpc"]]
+    if (!inherits(y_fpc, "fpc")) {
+
+      class(y_fpc) <- "fpc"
+
+    }
+    Y_hat <- fpc_to_fdata(coefs = Yhat_scores, X_fpc = y_fpc,
+                          ind_coefs = object[["q_thre"]])
+    return(Y_hat)
+
+  }
+
+}
+
+
+#' @rdname flm_est-S3
+#' @export
+plot.flm_est <- function(x, ...) {
+
+  scalar_X <- isTRUE(x[["scalar_X"]])
+  scalar_Y <- isTRUE(x[["scalar_Y"]])
+  Beta <- x[["Beta_hat"]]
+
+  # Both scalar: just report the value
+  if (scalar_X && scalar_Y) {
+
+    plot.default(1, drop(Beta), pch = 19, xlab = "", ylab = expression(beta),
+                 main = "Estimated coefficient", xaxt = "n", ...)
+    return(invisible(x))
+
+  }
+
+  # Scalar predictor: 1 x |t| matrix; plot as a curve over Y argvals
+  if (scalar_X) {
+
+    t <- x[["Y_fpc"]][["rotation"]][["argvals"]]
+    plot.default(t, drop(Beta), type = "l",
+                 xlab = "t", ylab = expression(hat(beta)(t)),
+                 main = "Estimated coefficient", ...)
+    return(invisible(x))
+
+  }
+
+  # Scalar response: |s| x 1 matrix; plot as a curve over X argvals
+  if (scalar_Y) {
+
+    s <- x[["X_fpc"]][["rotation"]][["argvals"]]
+    plot.default(s, drop(Beta), type = "l",
+                 xlab = "s", ylab = expression(hat(beta)(s)),
+                 main = "Estimated coefficient", ...)
+    return(invisible(x))
+
+  }
+
+  # Both functional: image plot of Beta_hat(s, t)
+  s <- x[["X_fpc"]][["rotation"]][["argvals"]]
+  t <- x[["Y_fpc"]][["rotation"]][["argvals"]]
+  if (requireNamespace("viridisLite", quietly = TRUE)) {
+
+    col <- viridisLite::viridis(64)
+
+  } else {
+
+    col <- grDevices::hcl.colors(64, "YlOrRd", rev = TRUE)
+
+  }
+  image(s, t, Beta, col = col, xlab = "s", ylab = "t",
+        main = expression(hat(beta)(s, t)), ...)
+  invisible(x)
 
 }

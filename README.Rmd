@@ -89,6 +89,31 @@ Y_fdata <- sample_frm_fr[["Y_fdata"]]
 flm_test(X = X_fdata, Y = Y_fdata, verbose = FALSE)
 ```
 
+## Idiomatic R API: S3 methods
+
+Since version 0.2.0, the main constructors return objects with S3 classes
+that support `print`, `summary`, `plot`, `coef`, `fitted`, `residuals`,
+and `predict` methods.
+
+```{r, s3-methods}
+# Fit and inspect
+set.seed(987654321)
+n <- 100
+X_fdata <- r_ou(n = n, t = seq(0, 1, l = 51), sigma = 2)
+Y_fdata <- 2 * X_fdata + r_ou(n = n, t = seq(0, 1, l = 51), sigma = 0.5)
+fit <- flm_est(X = X_fdata, Y = Y_fdata, est_method = "fpcr_l1s")
+fit
+summary(fit)
+
+# Out-of-sample prediction with predict.flm_est()
+X_new <- r_ou(n = 5, t = seq(0, 1, l = 51), sigma = 2)
+Y_new_hat <- predict(fit, newdata = X_new)
+
+# Diagnostic plot of the goodness-of-fit test
+gof <- flm_test(X = X_fdata, Y = Y_fdata, B = 100, verbose = FALSE)
+plot(gof, type = "dens")
+```
+
 ## AEMET temperatures data
 
 An illustration of the test application in a real dataset.
