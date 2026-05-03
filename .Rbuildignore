@@ -13,3 +13,5 @@
 TODO.md
 ^\.github$
 ^CRAN-SUBMISSION$
+^CLAUDE\.md$
+^\.claude$
