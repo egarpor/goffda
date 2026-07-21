@@ -1,4 +1,4 @@
-# Generates man/figures/logo.png: the goffda hex sticker.
+# Generates the goffda hex sticker (logo/logo.png + man/figures/logo.png).
 #
 # Motif: a sheaf of AEMET seasonal temperature curves (the functional data)
 # over the bilinear functional-linear-model coefficient surface beta(s, t)
@@ -8,12 +8,26 @@
 # (pointy-top hexagon centred at (1, 1)) and clipped to the hexagon, so the
 # content fills the whole hex and the hex outline itself does the cropping.
 #
-# Run from the package root:  Rscript data-raw/hex-logo.R
+# Run from the package root:  Rscript logo/logo.R
+# Output: logo/logo.png (master) and man/figures/logo.png (shipped mirror).
 
 library(hexSticker)
 library(ggplot2)
 library(showtext)
 showtext_auto()
+
+## ---- Shared logo standard (identical across egarpor packages) -------------
+# goffda draws in the hexagon coordinate system (geom_pkgname/geom_url), so it
+# keeps showtext for the Aller font; the shared constants below match the other
+# egarpor package logos.
+FONT    <- "Aller_Rg"   # typeface for the package name and the GitHub URL
+P_SIZE  <- 31.2         # package-name size (shared across packages)
+U_SIZE  <- 9.0          # GitHub URL size (large enough to read)
+U_X     <- 1.00         # GitHub URL position: along the lower-right hex edge
+U_Y     <- 0.08
+U_ANGLE <- 30
+H_SIZE  <- 1.5          # hexagon border thickness
+DPI     <- 600
 
 ## Hexagon geometry (matches hexSticker::geom_hexagon) ----------------------
 HX <- sqrt(3) / 2                                # half-width; vertices y in [0, 2]
@@ -64,21 +78,23 @@ bs <- bs[in_hex(bs$x, bs$y), ]                   # clip to the hexagon
 pal_curve <- c("#2166AC", "#4393C3", "grey80", "#D6604D", "#B2182B")
 
 sticker <- ggplot() +
-  geom_hexagon(size = 1.4, fill = "#FBFBFB", color = NA) +          # base fill
+  geom_hexagon(size = H_SIZE, fill = "#FBFBFB", color = NA) +       # base fill
   geom_tile(data = bs, aes(x, y, fill = z), alpha = 0.85) +         # beta field
   scale_fill_gradient2(low = "#2166AC", mid = "white", high = "#B2182B",
                        midpoint = 0, guide = "none") +
   geom_line(data = curves, aes(x, y, group = id, colour = w),       # curves
             linewidth = 0.5, alpha = 0.85, lineend = "round") +
   scale_colour_gradientn(colours = pal_curve, guide = "none") +
-  geom_hexagon(size = 1.4, fill = NA, color = "#2166AC") +          # border on top
+  geom_hexagon(size = H_SIZE, fill = NA, color = "#2166AC") +       # border on top
   geom_pkgname("goffda", x = 1, y = 1.52, color = "#B2182B",
-               family = "Aller_Rg", size = 22) +
-  geom_url("github.com/egarpor/goffda", x = 1, y = 0.08,
-           color = "#2166AC", family = "Aller_Rg", size = 4.3, angle = 30) +
-  theme_sticker(size = 1.4)
+               family = FONT, size = P_SIZE) +
+  geom_url("github.com/egarpor/goffda", x = U_X, y = U_Y,
+           color = "#2166AC", family = FONT, size = U_SIZE, angle = U_ANGLE) +
+  theme_sticker(size = H_SIZE)
 
+dir.create("logo", showWarnings = FALSE)
 dir.create("man/figures", showWarnings = FALSE, recursive = TRUE)
-save_sticker("man/figures/logo.png", sticker, dpi = 300)
+save_sticker("logo/logo.png", sticker, dpi = DPI)
+file.copy("logo/logo.png", "man/figures/logo.png", overwrite = TRUE)
 
-message("Wrote man/figures/logo.png")
+message("Wrote logo/logo.png and man/figures/logo.png")
