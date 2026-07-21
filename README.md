@@ -8,7 +8,7 @@ status](https://github.com/egarpor/goffda/workflows/R-CMD-check/badge.svg)](http
 [![](http://cranlogs.r-pkg.org/badges/grand-total/goffda)](https://cran.r-project.org/package=goffda)
 [![](http://cranlogs.r-pkg.org/badges/last-month/goffda)](https://cran.r-project.org/package=goffda)
 
-<!-- <img src="" alt="goffda  hexlogo" align="right" width="200" style="padding: 0 15px; float: right;"/> -->
+<img src="man/figures/logo.png" alt="goffda hex logo" align="right" width="200" style="padding: 0 15px; float: right;"/>
 
 ## Overview
 
