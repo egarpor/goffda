@@ -1,4 +1,4 @@
-# goffda
+# goffda <img src="man/figures/logo.png" align="right" height="175" alt="goffda hexlogo"/>
 
 [![License:
 GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
@@ -7,8 +7,6 @@ status](https://github.com/egarpor/goffda/workflows/R-CMD-check/badge.svg)](http
 [![](https://www.r-pkg.org/badges/version/goffda?color=green)](https://cran.r-project.org/package=goffda)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/goffda)](https://cran.r-project.org/package=goffda)
 [![](http://cranlogs.r-pkg.org/badges/last-month/goffda)](https://cran.r-project.org/package=goffda)
-
-<img src="man/figures/logo.png" alt="goffda hex logo" align="right" width="200" style="padding: 0 15px; float: right;"/>
 
 ## Overview
 
@@ -21,24 +19,16 @@ replicate the data application presented.
 
 ## Installation
 
-Get the released version from CRAN:
-
 ``` r
-# Install the package
+# Install it from CRAN
 install.packages("goffda")
-
-# Load package
 library(goffda)
 ```
 
-Alternatively, get the latest version from GitHub:
-
 ``` r
-# Install the package
-library(devtools)
-install_github("egarpor/goffda")
-
-# Load package
+# Alternatively, from GitHub
+library(pak)
+pak("egarpor/goffda")
 library(goffda)
 ```
 
