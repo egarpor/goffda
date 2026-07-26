@@ -57,7 +57,7 @@ of square-integrable functions in \eqn{[a, b]}, \eqn{L^2([a, b])}, and
 Together with the bivariate kernel \eqn{\beta}, they are the necessary
 elements for sampling a Functional Linear Model with  Functional Response
 (FLMFR):
-\deqn{Y(t) = \int_a^b X(s) \beta(s,t) ds + \varepsilon(t).}{
+\deqn{Y(t) = \int_a^b X(s) \beta(s,t) \,\mathrm{d}s + \varepsilon(t).}{
 Y(t) = \int_a^b X(s) \beta(s,t) ds + \epsilon(t).}
 
 The next functions sample \eqn{X} and \eqn{\varepsilon}{\epsilon}, and

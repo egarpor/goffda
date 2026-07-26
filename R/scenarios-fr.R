@@ -5,7 +5,8 @@
 #' @description Simulation of a Functional Regression Model with Functional
 #' Response (FRMFR) comprised of an additive mix of a linear and nonlinear
 #' terms:
-#' \deqn{Y(t) = \int_a^b X(s) \beta(s,t) ds + \Delta(X)(t) + \varepsilon(t),}{
+#' \deqn{Y(t) = \int_a^b X(s) \beta(s,t) \,\mathrm{d}s + \Delta(X)(t) +
+#' \varepsilon(t),}{
 #' Y(t) = \int_a^b X(s) \beta(s,t) ds + \Delta(X)(t) + \epsilon(t),}
 #' where \eqn{X} is a random variable in the Hilbert space of
 #' square-integrable functions in \eqn{[a, b]}, \eqn{L^2([a, b])},
@@ -483,7 +484,7 @@ nl_dev <- function(X_fdata, t = seq(0, 1, l = 101), nonlinear = NULL,
 #' Together with the bivariate kernel \eqn{\beta}, they are the necessary
 #' elements for sampling a Functional Linear Model with  Functional Response
 #' (FLMFR):
-#' \deqn{Y(t) = \int_a^b X(s) \beta(s,t) ds + \varepsilon(t).}{
+#' \deqn{Y(t) = \int_a^b X(s) \beta(s,t) \,\mathrm{d}s + \varepsilon(t).}{
 #' Y(t) = \int_a^b X(s) \beta(s,t) ds + \epsilon(t).}
 #'
 #' The next functions sample \eqn{X} and \eqn{\varepsilon}{\epsilon}, and
