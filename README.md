@@ -4,6 +4,9 @@
 GPLv3](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![R build
 status](https://github.com/egarpor/goffda/workflows/R-CMD-check/badge.svg)](https://github.com/egarpor/goffda/actions)
+[![R build
+status](https://github.com/egarpor/goffda/workflows/test-coverage/badge.svg)](https://github.com/egarpor/goffda/actions)
+[![](https://codecov.io/gh/egarpor/goffda/branch/master/graph/badge.svg)](https://app.codecov.io/gh/egarpor/goffda)
 [![](https://www.r-pkg.org/badges/version/goffda?color=green)](https://cran.r-project.org/package=goffda)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/goffda)](https://cran.r-project.org/package=goffda)
 [![](http://cranlogs.r-pkg.org/badges/last-month/goffda)](https://cran.r-project.org/package=goffda)
