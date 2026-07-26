@@ -96,7 +96,8 @@ object of length \code{n}.}
 Simulation of a Functional Regression Model with Functional
 Response (FRMFR) comprised of an additive mix of a linear and nonlinear
 terms:
-\deqn{Y(t) = \int_a^b X(s) \beta(s,t) ds + \Delta(X)(t) + \varepsilon(t),}{
+\deqn{Y(t) = \int_a^b X(s) \beta(s,t) \,\mathrm{d}s + \Delta(X)(t) +
+\varepsilon(t),}{
 Y(t) = \int_a^b X(s) \beta(s,t) ds + \Delta(X)(t) + \epsilon(t),}
 where \eqn{X} is a random variable in the Hilbert space of
 square-integrable functions in \eqn{[a, b]}, \eqn{L^2([a, b])},
